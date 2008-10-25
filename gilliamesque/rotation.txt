@@ -1,0 +1,3 @@
+rotation\rotator.png
+050000320240000
+1

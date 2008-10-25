@@ -1,0 +1,1251 @@
+{
+	"products" :    [
+				{
+					"name" :        "barley",
+					"plural" :      "barley",
+					"luxury" :      0
+				},
+				{
+					"name" :        "beef",
+					"plural" :      "beef",
+					"luxury" :      0
+				},
+				{
+					"name" :        "beer",
+					"plural" :      "beer",
+					"luxury" :      1
+				},
+				{
+					"name" :        "cane",
+					"plural" :      "cane",
+					"luxury" :      0
+				},
+				{
+					"name" :        "cow",
+					"plural" :      "cattle",
+					"luxury" :      0
+				},
+				{
+					"name" :        "chocolate",
+					"plural" :      "chocolate",
+					"luxury" :      10
+				},
+				{
+					"name" :        "cloth",
+					"plural" :      "cloth",
+					"luxury" :      2
+				},
+				{
+					"name" :        "cocoa",
+					"plural" :      "cocoa",
+					"luxury" :      0
+				},
+				{
+					"name" :        "hop",
+					"plural" :      "hops",
+					"luxury" :      0
+				},
+				{
+					"name" :        "silk",
+					"plural" :      "silk",
+					"luxury" :      7
+				},
+				{
+					"name" :        "spice",
+					"plural" :      "spices",
+					"luxury" :      6
+				},
+				{
+					"name" :        "sugar",
+					"plural" :      "sugar",
+					"luxury" :      2
+				},
+				{
+					"name" :        "tea",
+					"plural" :      "tea",
+					"luxury" :      3
+				},
+				{
+					"name" :        "wool",
+					"plural" :      "wool",
+					"luxury" :      0
+				}
+			],
+	"blueprints" :  [
+				{
+					"output" :      "beef",
+					"cost" :        50,
+					"rates" :       {
+								"cow" :         0.50000000000000000
+							}
+				},
+				{
+					"output" :      "beer",
+					"cost" :        100,
+					"rates" :       {
+								"barley" :      0.50000000000000000,
+								"hop" :         0.50000000000000000
+							}
+				},
+				{
+					"output" :      "cloth",
+					"cost" :        100,
+					"rates" :       {
+								"wool" :        1
+							}
+				},
+				{
+					"output" :      "chocolate",
+					"cost" :        150,
+					"rates" :       {
+								"cocoa" :       2
+							}
+				},
+				{
+					"output" :      "sugar",
+					"cost" :        100,
+					"rates" :       {
+								"cane" :        2
+							}
+				}
+			],
+	"ports" :       [
+				{
+					"name" :        "Amsterdam",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+								{
+									"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Monday, 29th November 1500\n\nLondon\n\n^ \"align\": \"left\" ^Dear Hoffman,\n\n\n\tAs agreed in our contract, here is $8.50 for wool. \n\nYours faithfully,\n\n\tAlbrecht",
+									"destination" :         "Amsterdam",
+									"recipient" :   "Hoffman",
+									"sender" :      "Albrecht",
+									"shippingtime" :        1,
+									"numinfo" :     1,
+									"sentences" :   [
+												{
+													"txt" :         "As agreed in our contract, here is $8.50 for wool.",
+													"isroutine" :   0,
+													"params" :      {
+																"$" :   "contract",
+																"product" :     "wool",
+																"amount" :      "8.50349045",
+																"commission" :  "0.119999997"
+															}
+												}
+											]
+								}
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"London" :      1
+							},
+					"residents" :   [
+								{
+									"money" :       10.116567611694336,
+									"home" :        "Amsterdam",
+									"name" :        "wool farmer (March)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"wool" :        8351
+											},
+									"type" :        "farmer",
+									"product" :     "wool",
+									"harvest" :     10000,
+									"harvestmonth" :        2,
+									"startprice" :  0.50000000000000000,
+									"price" :       1.4452239274978638,
+									"vprice" :      -0.0070036961697041988,
+									"selling" :     1024
+								},
+								{
+									"money" :       0,
+									"home" :        "Amsterdam",
+									"name" :        "cow farmer (February)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         3194
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     4000,
+									"harvestmonth" :        1,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.30632424354553223,
+									"vprice" :      0.042979642748832703,
+									"selling" :     358
+								},
+								{
+									"money" :       0,
+									"home" :        "Amsterdam",
+									"name" :        "cow farmer (June)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         1934
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     2000,
+									"harvestmonth" :        5,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.29346701502799988,
+									"vprice" :      -0.011258001439273357,
+									"selling" :     196
+								},
+								{
+									"money" :       1.0131429433822632,
+									"home" :        "Amsterdam",
+									"name" :        "cow farmer (October)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         2204
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     2000,
+									"harvestmonth" :        9,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.25328573584556580,
+									"vprice" :      -0.022097712382674217,
+									"selling" :     190
+								},
+								{
+									"money" :       61.079853057861328,
+									"home" :        "Amsterdam",
+									"name" :        "Hoffman",
+									"numbought" :   4,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        20,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+												"Albrecht" :    {
+															"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Tuesday, 30th November 1500\n\nAmsterdam\n\n^ \"align\": \"left\" ^Dear Albrecht,\n\n\n\t",
+															"destination" :         "London",
+															"recipient" :   "Albrecht",
+															"sender" :      "Hoffman",
+															"shippingtime" :        0,
+															"numinfo" :     0,
+															"sentences" :   [
+																	]
+														}
+											},
+									"prices" :      {
+												"cow" :         0.28726384043693542,
+												"beef" :        0.13720464706420898,
+												"wool" :        0.18077148497104645
+											},
+									"numtosell" :   {
+												"cow" :         -1,
+												"beef" :        -1,
+												"wool" :        -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Hoffman's beef factory"
+											],
+									"numsold" :     {
+												"beef" :        0,
+												"wool" :        10
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "Amsterdam",
+									"name" :        "Hoffman's beef factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0
+											},
+									"type" :        "factory",
+									"output" :      "beef",
+									"rates" :       {
+												"cow" :         0.50000000000000000
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Hoffman"
+								},
+								{
+									"money" :       1.3084740638732910,
+									"home" :        "Amsterdam",
+									"name" :        "Martin",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+												"James" :       {
+															"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Tuesday, 30th November 1500\n\nAmsterdam\n\n^ \"align\": \"left\" ^Dear James,\n\n\n\tAs agreed in our contract, here is $4.82 for barley. ",
+															"destination" :         "London",
+															"recipient" :   "James",
+															"sender" :      "Martin",
+															"shippingtime" :        0,
+															"numinfo" :     1,
+															"sentences" :   [
+																		{
+																			"txt" :         "As agreed in our contract, here is $4.82 for barley.",
+																			"isroutine" :   0,
+																			"params" :      {
+																						"$" :   "contract",
+																						"product" :     "barley",
+																						"amount" :      "4.81965160",
+																						"commission" :  "0.439999998"
+																					}
+																		}
+																	]
+														}
+											},
+									"prices" :      {
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        1.6099276542663574
+											},
+									"numtosell" :   {
+												"barley" :      -1,
+												"hop" :         -1,
+												"beer" :        -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Martin's beer factory"
+											],
+									"numsold" :     {
+												"beer" :        0
+											},
+									"contracts" :   [
+												{
+													"product" :     "barley",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												},
+												{
+													"product" :     "barley",
+													"price" :       0.43999999761581421,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												},
+												{
+													"product" :     "hop",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												},
+												{
+													"product" :     "hop",
+													"price" :       0.25000000000000000,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												}
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "Amsterdam",
+									"name" :        "Martin's beer factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0
+											},
+									"type" :        "factory",
+									"output" :      "beer",
+									"rates" :       {
+												"barley" :      0.50000000000000000,
+												"hop" :         0.50000000000000000
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Martin"
+								},
+								{
+									"money" :       0.0040738582611083984,
+									"home" :        "Amsterdam",
+									"name" :        "Hans",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+												"wool" :        0.18077148497104645,
+												"cane" :        0,
+												"sugar" :       3.0497837066650391
+											},
+									"numtosell" :   {
+												"wool" :        -1,
+												"cane" :        -1,
+												"sugar" :       -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Hans's sugar factory"
+											],
+									"numsold" :     {
+												"wool" :        30,
+												"sugar" :       0
+											},
+									"contracts" :   [
+												{
+													"product" :     "cane",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												},
+												{
+													"product" :     "cane",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "Alexander"
+												},
+												{
+													"product" :     "cane",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "Albrecht"
+												},
+												{
+													"product" :     "cane",
+													"price" :       0.23000000417232513,
+													"daysleft" :    0,
+													"vendor" :      "James"
+												},
+												{
+													"product" :     "cane",
+													"price" :       0.14000000059604645,
+													"daysleft" :    0,
+													"vendor" :      "Alexander"
+												},
+												{
+													"product" :     "cane",
+													"price" :       0.15999999642372131,
+													"daysleft" :    0,
+													"vendor" :      "Albrecht"
+												},
+												{
+													"product" :     "cane",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "Rickhart"
+												},
+												{
+													"product" :     "cane",
+													"price" :       0.41999998688697815,
+													"daysleft" :    0,
+													"vendor" :      "Rickhart"
+												}
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "Amsterdam",
+									"name" :        "Hans's sugar factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cane" :        1,
+												"sugar" :       0
+											},
+									"type" :        "factory",
+									"output" :      "sugar",
+									"rates" :       {
+												"cane" :        2
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Hans"
+								},
+								{
+									"money" :       1169.0247802734375,
+									"home" :        "Amsterdam",
+									"name" :        "Reinhart",
+									"numbought" :   7,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       17,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+												"wool" :        1.4356285333633423,
+												"cloth" :       3.0612850189208984
+											},
+									"numtosell" :   {
+												"wool" :        -1,
+												"cloth" :       -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Reinhart's cloth factory"
+											],
+									"numsold" :     {
+												"cloth" :       0
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "Amsterdam",
+									"name" :        "Reinhart's cloth factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"wool" :        0,
+												"cloth" :       0
+											},
+									"type" :        "factory",
+									"output" :      "cloth",
+									"rates" :       {
+												"wool" :        1
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Reinhart"
+								}
+							],
+					"journal" :     [
+								"Monday, 1st January 1500",
+								"\tHoffman built a beef factory.",
+								"\tIt is harvest time in Amsterdam! 3971 cattle arrive.",
+								"Monday, 1st February 1500",
+								"\tIt is harvest time in Amsterdam! 10921 wool arrive.",
+								"Tuesday, 16th February 1500",
+								"\tMartin built a beer factory.",
+								"Friday, 12th April 1500",
+								"\tHans built a sugar factory.",
+								"Monday, 1st May 1500",
+								"\tIt is harvest time in Amsterdam! 2313 cattle arrive.",
+								"Wednesday, 31st May 1500",
+								"\tReinhart built a cloth factory.",
+								"Monday, 1st September 1500",
+								"\tIt is harvest time in Amsterdam! 2345 cattle arrive."
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       463.34146118164062,
+								"home" :        "Amsterdam",
+								"name" :        "the citizens of Amsterdam",
+								"numbought" :   7,
+								"warehouse" :   {
+											"beef" :        0,
+											"beer" :        0,
+											"cloth" :       73,
+											"sugar" :       61
+										},
+								"type" :        "pleb",
+								"population" :  1175
+							},
+					"taxdate" :     360,
+					"economy" :     1700.8380126953125
+				},
+				{
+					"name" :        "London",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+								{
+									"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Monday, 29th November 1500\n\nAmsterdam\n\n^ \"align\": \"left\" ^Dear James,\n\n\n\tThank you for the sum of $2.86 I received. Thank you for the 1 hop I received. \n\nYours faithfully,\n\n\tMartin",
+									"destination" :         "London",
+									"recipient" :   "James",
+									"sender" :      "Martin",
+									"shippingtime" :        1,
+									"numinfo" :     2,
+									"sentences" :   [
+												{
+													"txt" :         "Thank you for the sum of $2.86 I received.",
+													"isroutine" :   0,
+													"params" :      {
+															}
+												},
+												{
+													"txt" :         "Thank you for the 1 hop I received.",
+													"isroutine" :   0,
+													"params" :      {
+															}
+												}
+											]
+								}
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Amsterdam" :   1
+							},
+					"residents" :   [
+								{
+									"money" :       141.21476745605469,
+									"home" :        "London",
+									"name" :        "Player",
+									"numbought" :   0,
+									"warehouse" :   {
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+											},
+									"numtosell" :   {
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+											],
+									"numsold" :     {
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       0,
+									"home" :        "London",
+									"name" :        "cow farmer (February)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         4384
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     4000,
+									"harvestmonth" :        1,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.33029028773307800,
+									"vprice" :      0.011768988333642483,
+									"selling" :     393
+								},
+								{
+									"money" :       1.5689060688018799,
+									"home" :        "London",
+									"name" :        "cow farmer (June)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         1857
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     2000,
+									"harvestmonth" :        5,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.31378120183944702,
+									"vprice" :      -0.013900990597903728,
+									"selling" :     207
+								},
+								{
+									"money" :       0,
+									"home" :        "London",
+									"name" :        "cow farmer (October)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         1124
+											},
+									"type" :        "farmer",
+									"product" :     "cow",
+									"harvest" :     2000,
+									"harvestmonth" :        9,
+									"startprice" :  0.20000000298023224,
+									"price" :       0.33195796608924866,
+									"vprice" :      -0.0016000000759959221,
+									"selling" :     185
+								},
+								{
+									"money" :       23.920824050903320,
+									"home" :        "London",
+									"name" :        "hop farmer (February)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"hop" :         5843
+											},
+									"type" :        "farmer",
+									"product" :     "hop",
+									"harvest" :     10000,
+									"harvestmonth" :        1,
+									"startprice" :  0.10000000149011612,
+									"price" :       1.8400633335113525,
+									"vprice" :      0.20252232253551483,
+									"selling" :     1008
+								},
+								{
+									"money" :       24.021015167236328,
+									"home" :        "London",
+									"name" :        "barley farmer (February)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"barley" :      8017
+											},
+									"type" :        "farmer",
+									"product" :     "barley",
+									"harvest" :     10000,
+									"harvestmonth" :        1,
+									"startprice" :  0.10000000149011612,
+									"price" :       1.8477703332901001,
+									"vprice" :      0.18708609044551849,
+									"selling" :     1044
+								},
+								{
+									"money" :       17.726902008056641,
+									"home" :        "London",
+									"name" :        "cane farmer (April)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cane" :        7571
+											},
+									"type" :        "farmer",
+									"product" :     "cane",
+									"harvest" :     10000,
+									"harvestmonth" :        3,
+									"startprice" :  1,
+									"price" :       2.2158627510070801,
+									"vprice" :      -0.18188852071762085,
+									"selling" :     998
+								},
+								{
+									"money" :       24.613122940063477,
+									"home" :        "London",
+									"name" :        "cocoa farmer (May)",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cocoa" :       976
+											},
+									"type" :        "farmer",
+									"product" :     "cocoa",
+									"harvest" :     1000,
+									"harvestmonth" :        4,
+									"startprice" :  5,
+									"price" :       2.4613122940063477,
+									"vprice" :      -0.039999999105930328,
+									"selling" :     81
+								},
+								{
+									"money" :       300.54620361328125,
+									"home" :        "London",
+									"name" :        "James",
+									"numbought" :   10,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        83,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+												"Martin" :      {
+															"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Tuesday, 30th November 1500\n\nLondon\n\n^ \"align\": \"left\" ^Dear Martin,\n\n\n\tFind enclosed $1.85. I have not sent any hop to Martin. ",
+															"destination" :         "Amsterdam",
+															"recipient" :   "Martin",
+															"sender" :      "James",
+															"shippingtime" :        0,
+															"numinfo" :     2,
+															"sentences" :   [
+																		{
+																			"txt" :         "Find enclosed $1.85.",
+																			"isroutine" :   0,
+																			"params" :      {
+																						"$" :   "here",
+																						"package" :     "$1.85"
+																					}
+																		},
+																		{
+																			"txt" :         "I have not sent any hop to Martin.",
+																			"isroutine" :   0,
+																			"params" :      {
+																					}
+																		}
+																	]
+														}
+											},
+									"prices" :      {
+												"barley" :      1.8405027389526367,
+												"hop" :         1.8332144021987915,
+												"beer" :        2.0127320289611816,
+												"cocoa" :       2.4529120922088623,
+												"cane" :        0.47660630941390991
+											},
+									"numtosell" :   {
+												"barley" :      -1,
+												"hop" :         -1,
+												"beer" :        -1,
+												"cocoa" :       -1,
+												"cane" :        -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"James's beer factory"
+											],
+									"numsold" :     {
+												"beer" :        0,
+												"cocoa" :       200,
+												"cane" :        40
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "London",
+									"name" :        "James's beer factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0
+											},
+									"type" :        "factory",
+									"output" :      "beer",
+									"rates" :       {
+												"barley" :      0.50000000000000000,
+												"hop" :         0.50000000000000000
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "James"
+								},
+								{
+									"money" :       56.456039428710938,
+									"home" :        "London",
+									"name" :        "Alexander",
+									"numbought" :   10,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        21,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+												"Hans" :        {
+															"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Tuesday, 30th November 1500\n\nLondon\n\n^ \"align\": \"left\" ^Dear Hans,\n\n\n\tFind enclosed $0.54. I have not sent any cane to Hans.\n\n\t",
+															"destination" :         "Amsterdam",
+															"recipient" :   "Hans",
+															"sender" :      "Alexander",
+															"shippingtime" :        0,
+															"numinfo" :     2,
+															"sentences" :   [
+																		{
+																			"txt" :         "Find enclosed $0.54.",
+																			"isroutine" :   0,
+																			"params" :      {
+																						"$" :   "here",
+																						"package" :     "$0.54"
+																					}
+																		},
+																		{
+																			"txt" :         "I have not sent any cane to Hans.",
+																			"isroutine" :   0,
+																			"params" :      {
+																					}
+																		}
+																	]
+														}
+											},
+									"prices" :      {
+												"cow" :         0.32408875226974487,
+												"beef" :        0.15663635730743408,
+												"cocoa" :       2.4529120922088623,
+												"cane" :        0.47660630941390991
+											},
+									"numtosell" :   {
+												"cow" :         -1,
+												"beef" :        -1,
+												"cocoa" :       -1,
+												"cane" :        -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Alexander's beef factory"
+											],
+									"numsold" :     {
+												"beef" :        0,
+												"cocoa" :       270,
+												"cane" :        40
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "London",
+									"name" :        "Alexander's beef factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0
+											},
+									"type" :        "factory",
+									"output" :      "beef",
+									"rates" :       {
+												"cow" :         0.50000000000000000
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Alexander"
+								},
+								{
+									"money" :       111.65380096435547,
+									"home" :        "London",
+									"name" :        "Albrecht",
+									"numbought" :   10,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       270,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+												"Hoffman" :     {
+															"txt" :         "^ \"font\": \"handwriting\", \"size\": 100^^ \"align\": \"right\" ^Tuesday, 30th November 1500\n\nLondon\n\n^ \"align\": \"left\" ^Dear Hoffman,\n\n\n\tAs agreed in our contract, here is $3.64 for wool. ",
+															"destination" :         "Amsterdam",
+															"recipient" :   "Hoffman",
+															"sender" :      "Albrecht",
+															"shippingtime" :        0,
+															"numinfo" :     1,
+															"sentences" :   [
+																		{
+																			"txt" :         "As agreed in our contract, here is $3.64 for wool.",
+																			"isroutine" :   0,
+																			"params" :      {
+																						"$" :   "contract",
+																						"product" :     "wool",
+																						"amount" :      "3.64435315",
+																						"commission" :  "0.119999997"
+																					}
+																		}
+																	]
+														}
+											},
+									"prices" :      {
+												"wool" :        0,
+												"cloth" :       4.3177075386047363,
+												"cocoa" :       2.4661614894866943,
+												"cane" :        0.75823646783828735
+											},
+									"numtosell" :   {
+												"wool" :        -1,
+												"cloth" :       -1,
+												"cocoa" :       -1,
+												"cane" :        -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Albrecht's cloth factory"
+											],
+									"numsold" :     {
+												"cloth" :       0,
+												"cane" :        40
+											},
+									"contracts" :   [
+												{
+													"product" :     "wool",
+													"price" :       -1,
+													"daysleft" :    0,
+													"vendor" :      "Hoffman"
+												},
+												{
+													"product" :     "wool",
+													"price" :       0.11999999731779099,
+													"daysleft" :    0,
+													"vendor" :      "Hoffman"
+												}
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "London",
+									"name" :        "Albrecht's cloth factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"wool" :        0,
+												"cloth" :       0
+											},
+									"type" :        "factory",
+									"output" :      "cloth",
+									"rates" :       {
+												"wool" :        1
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Albrecht"
+								},
+								{
+									"money" :       1.5170345306396484,
+									"home" :        "London",
+									"name" :        "Rickhart",
+									"numbought" :   8,
+									"warehouse" :   {
+												"cow" :         0,
+												"beef" :        0,
+												"barley" :      0,
+												"hop" :         0,
+												"beer" :        0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"chocolate" :   0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       4
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+												"cane" :        2.2025561332702637,
+												"sugar" :       3.8051226139068604
+											},
+									"numtosell" :   {
+												"cane" :        -1,
+												"sugar" :       -1
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+												"Rickhart's sugar factory"
+											],
+									"numsold" :     {
+												"sugar" :       0
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       -1,
+									"home" :        "London",
+									"name" :        "Rickhart's sugar factory",
+									"numbought" :   0,
+									"warehouse" :   {
+												"cane" :        1,
+												"sugar" :       0
+											},
+									"type" :        "factory",
+									"output" :      "sugar",
+									"rates" :       {
+												"cane" :        2
+											},
+									"price" :       0.30000001192092896,
+									"owner" :       "Rickhart"
+								}
+							],
+					"journal" :     [
+								"Wednesday, 31st December 1499",
+								"\tJames built a beer factory.",
+								"Monday, 1st January 1500",
+								"\tIt is harvest time in London! 5134 cattle arrive.",
+								"\tIt is harvest time in London! 10434 hops arrive.",
+								"\tIt is harvest time in London! 12608 barley arrive.",
+								"Monday, 29th January 1500",
+								"\tAlexander built a beef factory.",
+								"Monday, 1st March 1500",
+								"\tIt is harvest time in London! 9629 cane arrive.",
+								"Tuesday, 30th March 1500",
+								"\tAlbrecht built a cloth factory.",
+								"Monday, 1st April 1500",
+								"\tIt is harvest time in London! 1246 cocoa arrive.",
+								"Monday, 1st May 1500",
+								"\tIt is harvest time in London! 2242 cattle arrive.",
+								"Sunday, 7th June 1500",
+								"\tRickhart built a sugar factory.",
+								"Monday, 1st September 1500",
+								"\tIt is harvest time in London! 1264 cattle arrive."
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       1609.8754882812500,
+								"home" :        "London",
+								"name" :        "the citizens of London",
+								"numbought" :   29,
+								"warehouse" :   {
+											"beef" :        0,
+											"beer" :        29,
+											"cloth" :       32,
+											"sugar" :       52
+										},
+								"type" :        "pleb",
+								"population" :  1199
+							},
+					"taxdate" :     360,
+					"economy" :     2306.7636718750000
+				}
+			],
+	"date" :        335,
+	"player" :      "Player",
+	"tycoons" :     [
+				"James",
+				"Hoffman",
+				"Alexander",
+				"Martin",
+				"Albrecht",
+				"Hans",
+				"Reinhart",
+				"Rickhart"
+			]
+}

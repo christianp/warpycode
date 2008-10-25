@@ -1,0 +1,3 @@
+Following on from the effect I made for <a href="http://www.blitzbasic.com/Community/posts.php?topic=79693">this thread</a>, here's a pleasant little game.
+
+It's a game that requires patience, because everything happens quite slowly. Use the arrow keys or a joystick to move your little circle about and navigate the worlds. The jewels will be attracted to you and can help push about the bubbles.

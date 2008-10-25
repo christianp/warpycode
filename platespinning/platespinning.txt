@@ -1,0 +1,8 @@
+So I've had a revelation - there is a God, and He has a plan for us all....
+His plan for this little dude is for him to spend eternity doing a cosmic plate-spinning routine. God works in mysterious ways.
+
+Anyway, you control the dude's fate! Asteroid-ish controls for when he's flying: arrow keys provide turning and thrust. Fly into a plate to send it spinning, then press the up key to spin it more. When you want to get off, point the mouse in the direction you want to go (there's a line drawn from the centre of the plate to help you) and left-click. The dude will detach from the plate at the right point. If that isn't fast enough for you, right-click to detach right away.
+
+The aim of the game is to get every plate spinning so it's pure red. Plates go dark when they're not spinning, and yellow when they're spinning too fast. If the plate the dude is on is spinning too fast, he'll be thrown off.
+
+There's an editor. Press E in the game to get it.

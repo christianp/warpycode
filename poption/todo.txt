@@ -1,0 +1,4 @@
+OPTIONS
+tablet mode - don't lock mouse
+pop-on-release - clickypop when mouse is released, so no need for buttons
+fullscreen

@@ -1,0 +1,13 @@
+I was going to wait until I'd got this perfect and then wow everyone with it, but as usual my mind's wandered elsewhere.
+
+So for the last couple of weeks I've been thinking about how to do a simulation of that thing where you fold a piece of paper up lots of times, then cut it into the shape of a little person, unfolding to give a whole chain of little people.
+
+So here's a why-can't-I-concentrate-for-longer-than-5-minutes-on-something EXE.
+
+You can cut the bit of paper by clicking first outside of it, in the black space. Click on another point outside the paper to make a clean cut along that line, or click inside the paper to make an incision. Make another incision to the same point to cut a chunk out of the paper.
+
+You can fold the paper by doing a normal clean cut, but right clicking instead of left clicking on the second click. You can cut folded paper, and unfold a fold by right clicking on it.
+
+The folding doesn't completely work all the time yet because I haven't put the layering in. I know how to fix it, but can't be bothered today.
+
+Anyway, hope someone likes this, I'm quite chuffed with myself for working out all the geometry and algorithms, but a bit disappointed I couldn't find the motivation to finish it properly.

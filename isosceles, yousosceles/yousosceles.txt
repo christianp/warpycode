@@ -1,0 +1,8 @@
+Isosceles, Yousosceles.
+
+A game where you have to arrange triangles into closed groups, in order to score points. A triangle is a shape with three sides, and here each of those three sides could have a wall on it, which appears as a thick white line. Each triangle also has a colour, which it will mix with adjacent triangles if there's no wall between them. A triangle is always attached to your cursor. Right-click to rotate it (don't worry if it rotates of its own accord, it aligns itself to the tile you're hovering over) and left-click to place it in an empty square. When a triangle or group of triangles is completely surrounded by walls those triangles are removed from play and points are awarded based on the number of triangles in the group, the number of turns taken since you last scored, and the group's colour - if the group is a pure primary colour or pure white, you get more points than for any other kind of group.
+
+The game has no end, and I hope to add hexagons to it later. For now, enjoy the mindless grouping!
+
+Yrs sncrly,
+  cp

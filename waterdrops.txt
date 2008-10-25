@@ -1,0 +1,10 @@
+WATER DROPS!
+
+Instructions
+------------
+
+There's water falling all over the shop. It must be raining or something. The rain gods are pleased when you keep the rainwater in jugs, especially thin ones, they're very fashionable rain gods.
+You can move the buckets about by left clicking on the circle in the centre of a bucket and dragging it about, but it can only move within a certain range from where it started.
+The buckets will disappear after a while so you need to move the water about with pipes. To create a pipe draw a line with the left mouse button. You can grab either end of a pipe and move it about if you need to. To pump water, grab the crank in the middle of the pipe with the left mouse button and swing it left and right as fast as you feel like. To remove a pipe that's getting in your way right click on it.
+
+The game ends when the water level reaches the top of the screen. When that happens you'll be given your score.

@@ -1,0 +1,51 @@
+products
+barley barley
+hop hops
+ale ale 1
+wool wool
+cloth cloth 2
+cocoa cocoa
+chocolate chocolate 10
+spice spices 6
+silk silk 7
+tea tea 3
+cane cane
+sugar sugar 2
+
+ports
+Amsterdam .1 1000
+
+Venice .1 100
+Zeebrugge .1 100
+Paris .1 100
+
+distances
+London Amsterdam 1
+
+Amsterdam Zeebrugge 1
+London Venice 2
+Paris Amsterdam 1
+Paris Venice 1
+
+merchants
+
+farmers
+London cattle January 4000 .2
+London cattle May 2000 .2
+London cattle September 2000 .2
+London hops January 10000 .1
+London barley January 10000 .1
+Amsterdam wool February 10000 .5
+London cane March 10000 1
+London cocoa April 1000 5
+Amsterdam cattle January 4000 .2
+Amsterdam cattle May 2000 .2
+Amsterdam cattle September 2000 .2
+
+
+factories
+beef 50 .5 cattle
+ale 100 .5 hops .5 barley
+cloth 100 1 wool
+sugar 100 2 cane
+chocolate 150 2 cocoa

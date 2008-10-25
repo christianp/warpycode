@@ -1,0 +1,7 @@
+I've made a game.
+
+It's called Schizophrenic Pacman.
+
+It involves popping pills to keep your sanity in a maze of twisty passages that only vaguely makes sense.
+
+Try it out! 

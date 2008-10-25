@@ -1,0 +1,35 @@
+jimbo
+piece
+	head
+	head.png
+	1
+	2
+piece
+	jaw
+	jaw.png
+	3
+	4
+constraint
+	link
+	1
+	head
+	jaw
+	5
+	6
+	.5
+constraint
+	angle
+	1
+	head
+	100
+constraint
+	position
+	1
+	jaw
+	x < 3
+constraint
+	force
+	1
+	jaw
+	0
+	1

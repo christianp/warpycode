@@ -1,0 +1,8 @@
+Schroedinger's Ghost
+
+HOT DAMN this is a good idea!
+
+It's like your common or garden Pacman, but the ghosts are wave-functions: Until you observe them, they have a probability of being everywhere. This probability is shown by the board lighting up with each ghost's colour where they are likely to be. If you observe a square, there is a probability that the ghost will appear there and start chasing you. Cripes!
+If a ghost does start chasing you, try and get it out of your sight, where it will fade away until it becomes a wave-function again.
+
+Cursor keys to move, objective is to pick up all the pills, yadda yadda yadda. There's no need for the super pill things, because you can just hide from the ghosts.

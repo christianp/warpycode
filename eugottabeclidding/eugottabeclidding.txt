@@ -1,0 +1,2 @@
+Another diversion, which I'm considering making into a surveying / charting mini game.
+It's a virtual ruler and compass set, for making geometric constructions. I've also spent a frustrating evening making it calculate the area of arbitrary polygons, even with holes in, albeit very slowly. 

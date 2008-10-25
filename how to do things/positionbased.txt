@@ -1,0 +1,24 @@
+I found a nice paper a few days ago called Position Based Dynamics, by a chap called muller and some other dudes. It explains rather clearly how to implement a dynamics system that can handle pretty much whatever sort of rules you want to put in it.
+This is great, because physics is something that everyone seems to have trouble with beyond simply moving particles about, without resorting to those wrappers for things like newton or ODE. I certainly do, so this is going to stick around for a good while in my how-to-do-stuff folder.
+So, I had a go at writing this system in BMax, and here it is. I hope someone finds it useful! 
+
+
+Position - based dynamics (Muller et al 2006) 
+
+HOW IT WORKS
+There are objects , which are collections of vertices and constraints on how those
+vertices act.
+So you create an object , add a bunch of vertices , then add some constraints
+Constraints can set the distance between vertices , make sure something doesn't bend too 
+much, make sure an object retains its volume, whatever.
+The update function then moves everything about for one timestep then finds an arrangement
+for them to be in that satisfies the constraints
+
+That's it!
+
+You can make sure a vertex isn't moved by the solver by setting its inverse mass, w, to 0.
+(For example when you've attached it to something)
+
+Adding different kinds of constraints requires a little bit of maths and know - how ,
+which you can find in the original paper: 
+http:/ / www.matthiasmueller.info / publications / posBasedDyn.pdf

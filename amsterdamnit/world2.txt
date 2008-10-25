@@ -1,0 +1,655 @@
+{
+	"products" :    [
+				{
+					"name" :        "ale",
+					"plural" :      "ale",
+					"luxury" :      1
+				},
+				{
+					"name" :        "barley",
+					"plural" :      "barley",
+					"luxury" :      0
+				},
+				{
+					"name" :        "beef",
+					"plural" :      "beef",
+					"luxury" :      0
+				},
+				{
+					"name" :        "cane",
+					"plural" :      "cane",
+					"luxury" :      0
+				},
+				{
+					"name" :        "cow",
+					"plural" :      "cattle",
+					"luxury" :      0
+				},
+				{
+					"name" :        "chocolate",
+					"plural" :      "chocolate",
+					"luxury" :      10
+				},
+				{
+					"name" :        "cloth",
+					"plural" :      "cloth",
+					"luxury" :      2
+				},
+				{
+					"name" :        "cocoa",
+					"plural" :      "cocoa",
+					"luxury" :      0
+				},
+				{
+					"name" :        "hop",
+					"plural" :      "hops",
+					"luxury" :      0
+				},
+				{
+					"name" :        "silk",
+					"plural" :      "silk",
+					"luxury" :      7
+				},
+				{
+					"name" :        "spice",
+					"plural" :      "spices",
+					"luxury" :      6
+				},
+				{
+					"name" :        "sugar",
+					"plural" :      "sugar",
+					"luxury" :      2
+				},
+				{
+					"name" :        "tea",
+					"plural" :      "tea",
+					"luxury" :      3
+				},
+				{
+					"name" :        "wool",
+					"plural" :      "wool",
+					"luxury" :      0
+				}
+			],
+	"blueprints" :  [
+			],
+	"ports" :       [
+				{
+					"name" :        "Antwerp",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Bergen" :      5,
+								"Bristol" :     6,
+								"Cologne" :     5,
+								"Danzig" :      8,
+								"Hamburg" :     5,
+								"Lisbon" :      11,
+								"London" :      2,
+								"Paris" :       2
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Antwerp",
+								"name" :        "the citizens of Antwerp",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Augsburg",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Cologne" :     3,
+								"Venice" :      2
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Augsburg",
+								"name" :        "the citizens of Augsburg",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Barcelona",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Cadiz" :       20,
+								"Genoa" :       16,
+								"Lyons" :       3,
+								"Naples" :      15,
+								"Venice" :      14
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Barcelona",
+								"name" :        "the citizens of Barcelona",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Bergen",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     5,
+								"Bristol" :     9,
+								"Cologne" :     9,
+								"Danzig" :      11,
+								"Hamburg" :     9,
+								"Lisbon" :      14,
+								"London" :      5
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Bergen",
+								"name" :        "the citizens of Bergen",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Bristol",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     6,
+								"Bergen" :      9,
+								"Cologne" :     10,
+								"Danzig" :      12,
+								"Hamburg" :     10,
+								"Lisbon" :      15,
+								"London" :      6
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Bristol",
+								"name" :        "the citizens of Bristol",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Cadiz",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Barcelona" :   20,
+								"Genoa" :       19,
+								"Lisbon" :      3,
+								"Naples" :      18,
+								"Venice" :      18
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Cadiz",
+								"name" :        "the citizens of Cadiz",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Cologne",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     5,
+								"Augsburg" :    3,
+								"Bergen" :      9,
+								"Bristol" :     10,
+								"Cologne" :     1,
+								"Danzig" :      12,
+								"Hamburg" :     9,
+								"Lisbon" :      15,
+								"London" :      6,
+								"Lyons" :       3
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Cologne",
+								"name" :        "the citizens of Cologne",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Danzig",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     8,
+								"Bergen" :      11,
+								"Bristol" :     12,
+								"Cologne" :     12,
+								"Hamburg" :     12,
+								"Lisbon" :      17,
+								"London" :      8
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Danzig",
+								"name" :        "the citizens of Danzig",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Genoa",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Barcelona" :   16,
+								"Cadiz" :       19,
+								"Lyons" :       3,
+								"Naples" :      14,
+								"Venice" :      14
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Genoa",
+								"name" :        "the citizens of Genoa",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Hamburg",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     5,
+								"Bergen" :      9,
+								"Bristol" :     10,
+								"Cologne" :     9,
+								"Danzig" :      12,
+								"Lisbon" :      15,
+								"London" :      6
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Hamburg",
+								"name" :        "the citizens of Hamburg",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Lisbon",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     11,
+								"Bergen" :      14,
+								"Bristol" :     15,
+								"Cadiz" :       3,
+								"Cologne" :     15,
+								"Danzig" :      17,
+								"Hamburg" :     15,
+								"London" :      11
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Lisbon",
+								"name" :        "the citizens of Lisbon",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "London",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     2,
+								"Bergen" :      5,
+								"Bristol" :     6,
+								"Cologne" :     6,
+								"Danzig" :      8,
+								"Hamburg" :     6,
+								"Lisbon" :      11
+							},
+					"residents" :   [
+								{
+									"money" :       500,
+									"home" :        "London",
+									"name" :        "Player",
+									"numbought" :   0,
+									"warehouse" :   {
+											},
+									"type" :        "merchant",
+									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+											},
+									"numtosell" :   {
+											},
+									"employees" :   [
+											],
+									"contacts" :    [
+											],
+									"factories" :   [
+											],
+									"numsold" :     {
+											},
+									"contracts" :   [
+											]
+								}
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "London",
+								"name" :        "the citizens of London",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Lyons",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Barcelona" :   3,
+								"Cologne" :     3,
+								"Genoa" :       3,
+								"Paris" :       2
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Lyons",
+								"name" :        "the citizens of Lyons",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Naples",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Barcelona" :   15,
+								"Cadiz" :       18,
+								"Genoa" :       14,
+								"Venice" :      13
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Naples",
+								"name" :        "the citizens of Naples",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Paris",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Antwerp" :     2,
+								"Lyons" :       2
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Paris",
+								"name" :        "the citizens of Paris",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				},
+				{
+					"name" :        "Venice",
+					"taxrate" :     0.10000000149011612,
+					"inbox" :       [
+							],
+					"outbox" :      [
+							],
+					"distances" :   {
+								"Augsburg" :    2,
+								"Barcelona" :   14,
+								"Cadiz" :       18,
+								"Genoa" :       14,
+								"Naples" :      13
+							},
+					"residents" :   [
+							],
+					"journal" :     [
+							],
+					"reported" :    0,
+					"populace" :    {
+								"money" :       300,
+								"home" :        "Venice",
+								"name" :        "the citizens of Venice",
+								"numbought" :   0,
+								"warehouse" :   {
+											"beef" :        200
+										},
+								"type" :        "pleb",
+								"population" :  1000
+							},
+					"taxdate" :     0,
+					"economy" :     0
+				}
+			],
+	"date" :        0,
+	"player" :      "Player",
+	"tycoons" :     [
+			]
+}

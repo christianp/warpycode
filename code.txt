@@ -1,0 +1,11 @@
+w1				'write 1 in first space
+d^mvm>			'duplicate this in the square above and move back down and right
+w1 				'write 1 in second space
+d^m< 			'duplicate in square above and move left
+s1 				'start of loop
+d^m^w1000-vi2mv 'check if number is bigger than 1000, if so go to end, otherwise carry on
+p 				'print number
++>d>dv 			'add the two numbers, then duplicate right and down
+m<d^ 			'move left, and duplicate this number to row above
+g1 				'go back to start of loop
+s2e 			'end of program

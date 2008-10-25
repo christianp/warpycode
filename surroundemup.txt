@@ -1,0 +1,11 @@
+In this game, you have to create a path along the network of points.
+ 
+You do this by left-clicking on the points connected to your current
+point (THE BIG RED ONE), to move to that point.
+ 
+BUT: You can't visit a point twice, apart from the one you started at.
+SO: If you get stuck, right-click to destroy your path and start again.
+ 
+The aim of the game is to get back to the point you started at (THE GREEN ONE).
+Doing this gets you points. You get more points for a longer path,
+And lots more points for enclosing other points within your path.
