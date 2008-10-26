@@ -1,3 +1,49 @@
+Global gwidth#,gheight#
+Global panx#=0,pany#=0,zoom#=1,tzoom#=zoom
+
+
+Global sounditems:TList
+Type sounditem
+	Field chan:TChannel
+	Field loops
+	Field sound:TSound
+	Field rate#,pan#,volume#
+	
+	Function Create:sounditem(sound:TSound,rate#,pan#,volume#,loops=0)
+		si:sounditem=New sounditem
+		si.chan=AllocChannel()
+		si.sound = sound
+		si.loops=loops
+		si.rate=rate
+		si.pan=pan
+		si.volume=volume
+		si.update
+		PlaySound(si.sound,si.chan)
+		sounditems.AddLast si
+		Return si
+	End Function
+	
+	Method Delete()
+		StopChannel chan
+	End Method
+
+	Method update()	
+		SetChannelRate chan,rate
+		SetChannelPan chan,pan
+		SetChannelVolume chan , volume
+		If Not ChannelPlaying(chan)
+			If loops
+				PlaySound sound , chan
+			Else
+				sounditems.Remove sound
+			EndIf
+		EndIf
+	End Method
+	
+End Type
+
+
+
 Global snakes:TList
 Type snake
 	Field x#,y#
@@ -16,6 +62,7 @@ Type snake
 	Field caught:fruit
 	Field eyean1#,eyean2#,veyean1#,veyean2#
 	Field lumps:TList
+	Field lastcatch
 	
 	Method New()
 		snakes.addlast Self
@@ -82,7 +129,7 @@ Type snake
 		
 		'lumps
 		For a:lump=EachIn lumps
-			a.seg:-1
+			a.seg:-.5
 			If a.seg<=0
 				lumps.remove a
 			EndIf
@@ -92,27 +139,36 @@ Type snake
 		mouthx#=x+Cos(an)*width*.5
 		mouthy#=y+Sin(an)*width*.5
 
+		tonguex=x+Cos(an)*width*2
+		tonguey=y+Sin(an)*width*2
+		mindist#=-1
+		mindiff#=0
+		For f:fruit=EachIn fruits
+			dx#=f.x-x
+			dy#=f.y-y
+			d#=Sqr(dx*dx+dy*dy)
+			diff#=Abs(andiff(ATan2(dy,dx),an))
+			If (diff<mindiff Or mindist=-1) And Abs(diff)<90 And d<tlength
+				mindist=d
+				mindiff=diff
+				tonguex=f.x
+				tonguey=f.y
+			EndIf
+		Next
+
 		Select tonguestate
 		Case 0 ' no fruit
-			tonguex=x+Cos(an)*width*2
-			tonguey=y+Sin(an)*width*2
-			mindist#=-1
-			mindiff#=0
-			For f:fruit=EachIn fruits
-				dx#=f.x-x
-				dy#=f.y-y
-				d#=Sqr(dx*dx+dy*dy)
-				diff#=Abs(andiff(ATan2(dy,dx),an))
-				If (diff<mindiff Or mindist=-1) And Abs(diff)<90 And d<tlength
-					mindist=d
-					mindiff=diff
-					tonguex=f.x
-					tonguey=f.y
-				EndIf
-			Next
 
+			ostretch#=tonguestretch
 			targstretch#=mindist/tlength
 			tonguestretch:+(targstretch-tonguestretch)*.1
+			
+			tonguediff#=tonguestretch-ostretch
+			
+			If (MilliSecs()-lastcatch>1000) And Rand(100)=1
+				tonguestate=2
+				lastcatch=MilliSecs()
+			EndIf
 		Case 1
 			tonguex=caught.x
 			tonguey=caught.y
@@ -122,14 +178,26 @@ Type snake
 			tonguestretch:-.05
 			If tonguestretch<=0
 				tonguestate=0
-				fruits.remove caught
 				normalwidth:+1/normalwidth
 				tlength:+1/normalwidth
 				If Rand(5)=1 maxlength:+1
 				a:lump=New lump
 				a.seg=numsegs
 				lumps.addlast a
+				caught.dead=1
 				caught:fruit=Null
+				lastcatch=MilliSecs()
+			EndIf
+		Case 2 'hissing
+			tonguestretch:+(.2-tonguestretch)*.1
+			wobble#=MilliSecs()*10
+			For l:licker=EachIn tongue
+				l.an:+Cos(wobble)*5
+				wobble:+45
+			Next
+			If MilliSecs()-lastcatch>500
+				tonguestate=0
+				lastcatch=MilliSecs()
 			EndIf
 		End Select
 
@@ -153,7 +221,8 @@ Type snake
 			limit:*.8
 		Next
 		
-		If tonguestate=0
+		Select tonguestate
+		Case 0
 			For f:fruit=EachIn fruits
 				dx#=f.x-ox
 				dy#=f.y-oy
@@ -163,10 +232,10 @@ Type snake
 					caught=f
 				EndIf
 			Next
-		Else
+		Case 1
 			caught.x=ox
 			caught.y=oy
-		EndIf
+		End Select
 	
 	End Method
 	
@@ -177,6 +246,7 @@ Type snake
 		bodypaper:timage=getpaper("blue")
 		tonguepaper:timage=getpaper("lightgrey")
 
+		'draw tongue
 		ox#=mouthx
 		oy#=mouthy
 		oan#=an
@@ -196,9 +266,7 @@ Type snake
 			y2#=oy-Sin(oan+90)*width*.1
 			poly=[x1,y1,x2,y2,ox2,oy2,ox1,oy1]
 			SetColor 255,255,255
-			'DrawPoly poly
-			drawtexturedpoly tonguepaper,panuv(poly)
-			'DrawLine ox,oy,nx,ny
+			drawzoomtexturedpoly tonguepaper,panuv(poly)
 			ox=nx
 			oy=ny
 			ox1=x1
@@ -209,11 +277,12 @@ Type snake
 		x1#=ox+Cos(oan-30)*width*.5
 		y1#=oy+Sin(oan-30)*width*.5
 		poly=[ox1, oy1, x1,y1, ox2, oy2]
-		drawtexturedpoly tonguepaper,panuv(poly)
+		drawzoomtexturedpoly tonguepaper,panuv(poly)
 		x1#=ox+Cos(oan+30)*width*.5
 		y1#=oy+Sin(oan+30)*width*.5
 		poly=[ox1, oy1, x1,y1, ox2, oy2]
-		drawtexturedpoly tonguepaper,panuv(poly)
+		drawzoomtexturedpoly tonguepaper,panuv(poly)
+
 
 		SetLineWidth 3
 		SetColor 255,255,255
@@ -236,16 +305,19 @@ Type snake
 				tx#=tailx+Cos(endan)*tailwidth
 				ty#=taily+Sin(endan)*tailwidth
 				poly=[tailx,taily,ox,oy,tx,ty]
-				SetColor 255,255,255
-				drawtexturedpoly bodypaper,panuv(poly)
+				dp#=Cos(tailan*2)*.2+.8
+				SetColor 255*dp,255*dp,255*dp
+				drawzoomtexturedpoly bodypaper,panuv(poly)
 				SetColor 0,0,0
 				SetAlpha .1
-				DrawLine ox,oy,tx,ty
+				DrawzoomLine ox,oy,tx,ty
 				SetAlpha 1
 				ox=tx
 				oy=ty
 			Next
 
+			lumpsize#=.1*width
+			lumpsize#=5
 			For n=1 To Len(segments)/4 - 1
 				sx#=segments[n*4]
 				sy#=segments[n*4+1]
@@ -254,9 +326,9 @@ Type snake
 					diff=Abs(a.seg-n)
 					diff:*diff
 					If diff=0
-						swidth:+5
+						swidth:+lumpsize
 					ElseIf diff<5
-						swidth:+5.0/diff
+						swidth:+lumpsize/diff
 					EndIf
 				Next
 				san#=segments[n*4+3]
@@ -265,14 +337,15 @@ Type snake
 				x2#=sx+Cos(san-90)*swidth
 				y2#=sy+Sin(san-90)*swidth
 				poly#=[ox1,oy1,ox2,oy2,x2,y2,x1,y1]
-				SetColor 255,255,255
-				drawtexturedpoly bodypaper,panuv(poly)
+				dp#=Cos(san*2)*.2+.8
+				SetColor 255*dp,255*dp,255*dp
+				drawzoomtexturedpoly bodypaper,panuv(poly)
 				SetAlpha .1
 				SetColor 0,0,0
-				DrawLine ox1,oy1,x1,y1
-				DrawLine ox2,oy2,x2,y2
-				DrawLine ox1,oy1,x2,y2
-				DrawLine ox2,oy2,x1,y1
+				DrawzoomLine ox1,oy1,x1,y1
+				DrawzoomLine ox2,oy2,x2,y2
+				DrawzoomLine ox1,oy1,x2,y2
+				DrawzoomLine ox2,oy2,x1,y1
 				SetAlpha 1
 				ox1=x1
 				oy1=y1
@@ -280,24 +353,26 @@ Type snake
 				oy2=y2
 			Next
 			
+			
 			SetColor 255,255,255
 
-			headan#=ATan2(y2-y1,x2-x1)+90
+			headan#=an'ATan2(y2-y1,x2-x1)+90
 			headx#=x
 			heady#=y
 			headwidth#=width
-			ox#=x2
-			oy#=y2
+			ox#=x+Cos(headan)*headwidth
+			oy#=y+Sin(headan)*headwidth
 			For n=0 To 6
 				endan#=headan+n*30-90
 				tx#=headx+Cos(endan)*headwidth
 				ty#=heady+Sin(endan)*headwidth
 				poly=[headx,heady,ox,oy,tx,ty]
-				SetColor 255,255,255
-				drawtexturedpoly bodypaper,panuv(poly)
+				dp#=Cos(headan*2)*.2+.8
+				SetColor 255*dp,255*dp,255*dp
+				drawzoomtexturedpoly bodypaper,panuv(poly)
 				SetColor 0,0,0
 				SetAlpha .1
-				DrawLine ox,oy,tx,ty
+				DrawzoomLine ox,oy,tx,ty
 				SetAlpha 1
 				ox=tx
 				oy=ty
@@ -314,16 +389,15 @@ Type snake
 			veyean2:*.9
 			SetColor 255,255,255
 			eyer#=width*.4
-			DrawOval eyex1-eyer,eyey1-eyer,eyer*2,eyer*2
-			DrawOval eyex2-eyer,eyey2-eyer,eyer*2,eyer*2
+			Drawzoomcircle eyex1,eyey1,eyer
+			Drawzoomcircle eyex2,eyey2,eyer
 			SetColor 0,0,0
-			DrawOval eyex1+Cos(eyean1)*eyer/2-eyer/2,eyey1+Sin(eyean1)*eyer/2-eyer/2,eyer,eyer
-			DrawOval eyex2+Cos(eyean2)*eyer/2-eyer/2,eyey2+Sin(eyean2)*eyer/2-eyer/2,eyer,eyer
+			Drawzoomcircle eyex1+Cos(eyean1)*eyer/2,eyey1+Sin(eyean1)*eyer/2,eyer/2
+			Drawzoomcircle eyex2+Cos(eyean2)*eyer/2,eyey2+Sin(eyean2)*eyer/2,eyer/2
 		EndIf
 		
-		'SetLineWidth 3
-		'ox#=x+Cos(an)*width
-		'oy#=y+Sin(an)*width
+		'DrawText whistle.volume,0,0
+		'DrawText whistle.rate,0,15
 		
 	End Method
 End Type
@@ -337,11 +411,12 @@ Global fruits:TList
 Type fruit
 	Field x#,y#
 	Field tex:TImage
+	Field dead
 	
 	Method New()
-		x=Rand(gwidth)
-		y=Rand(gheight)
-		fruits.addlast Self
+		x=panx+Rnd(-1,1)*gwidth
+		y=pany+Rnd(-1,1)*gheight
+		'fruits.addlast Self
 		tex=getpaper(texes[Rand(0,2)])
 	End Method
 	
@@ -355,8 +430,126 @@ Type fruit
 			poly[n+1]=py
 			n:+2
 		Next
-		drawtexturedpoly tex,panuv(poly)
+		drawzoomtexturedpoly tex,panuv(poly)
 	End Method
+End Type
+
+Global onitems:TList
+Global numscreens=0
+Type screen
+	Field sx,sy
+	Field x#,y#
+	Field neighbours:screen[3,3]
+	Field items:TList
+	Field number
+	
+	Method New()
+		items=New TList
+		neighbours[1,1]=Self
+		number=numscreens
+		numscreens:+1
+	End Method
+	
+	Function Create:screen(sx,sy)
+		s:screen=New screen
+		s.sx=sx
+		s.sy=sy
+		s.x=sx*gwidth
+		s.y=sy*gheight
+		'numfruits=Rand(0,3)*10+Rand(10)
+		'For c=1 To numfruits
+		'	f:fruit=New fruit
+		'	f.x=s.x+Rnd(-.5,.5)*gwidth
+		'	f.y=s.y+Rnd(-.5,.5)*gheight
+		'	s.items.addlast f
+		'Next
+		
+		numclumps=Rand(3)
+		For c=1 To numclumps
+			x#=s.x+Rnd(-.5,.5)*gwidth
+			y#=s.y+Rnd(-.5,.5)*gheight
+			size=Rand(1,10)
+			r#=30*Sqr(size)
+			For n=1 To size
+				f:fruit=New fruit
+				an#=Rand(360)
+				ro#=Rnd(0,1)*r
+				f.x=x+Cos(an)*r
+				f.y=y+Sin(an)*r
+				s.items.addlast f
+			Next
+		Next
+		Return s
+	End Function
+	
+	Method update()
+		If curscreen=Self
+			fruits=New TList
+			For nx=0 To 2
+			For ny=0 To 2
+			If nx<>1 Or ny<>1
+				If Not neighbours[nx,ny]
+					s2:screen=screen.Create(sx+nx-1,sy+ny-1)
+					neighbours[nx,ny]=s2
+				EndIf
+				s2:screen=neighbours[nx,ny]
+				s2.neighbours[2-nx,2-ny]=Self
+				If nx=1
+					s2.neighbours[0,2-ny]=neighbours[0,1]
+					s2.neighbours[2,2-ny]=neighbours[2,1]
+					s2.neighbours[0,1]=neighbours[0,ny]
+					s2.neighbours[2,1]=neighbours[2,ny]
+				EndIf
+				If ny=1
+					s2.neighbours[2-nx,0]=neighbours[1,0]
+					s2.neighbours[2-nx,2]=neighbours[1,2]
+					s2.neighbours[1,0]=neighbours[nx,0]
+					s2.neighbours[1,2]=neighbours[nx,2]
+				EndIf
+				s2.update
+			EndIf
+			Next
+			Next
+		EndIf
+		For f:fruit=EachIn items
+			If f.dead
+				items.remove f
+			Else
+				fruits.addlast f
+			EndIf
+		Next
+	End Method
+		
+	Method draw(main=1)
+		Rem
+		drawzoomline x-gwidth/2,y-gheight/2,x+gwidth/2,y-gheight/2
+		drawzoomline x-gwidth/2,y-gheight/2,x-gwidth/2,y+gheight/2
+
+		co=0
+		For nx=0 To 2
+		For ny=0 To 2
+			If neighbours[nx,ny] co:+1
+		Next
+		Next
+
+		DrawText number+":"+sx+","+sy+" ("+co+")",zoomx(x),zoomy(y)
+		EndRem
+		
+		For f:fruit=EachIn items
+			f.draw
+		Next
+		If main
+			For nx=0 To 2
+			For ny=0 To 2
+				If nx<>1 Or ny<>1
+					neighbours[nx,ny].draw False
+					'drawzoomline x,y,neighbours[nx,ny].x,neighbours[nx,ny].y
+				EndIf
+			Next
+			Next
+		EndIf
+	End Method
+	
 End Type
 
 Type licker
@@ -378,10 +571,10 @@ Function andiff#(an1,an2)
 End Function
 
 
-Global gwidth,gheight
 gwidth=800
-gheight=800
-Graphics 800,800,0
+gheight=400
+AppTitle="Snakey ssss"
+Graphics gwidth,gheight,0
 SetBlend ALPHABLEND
 
 Global papers:tmap=New tmap
@@ -394,11 +587,15 @@ While fname
 	fname=NextFile(dirhandle)
 Wend
 
+sounditems=New TList
+Global whistleupsound:TSound=LoadSound("whistleup.ogg")
+Global whistledownsound:TSound=LoadSound("whistledown.ogg")
+
 snakes=New TList
 
-s1:snake=snake.Create(700,700)
+s1:snake=snake.Create(0,0)
 
-fruits=New TList
+Global curscreen:screen=screen.Create(0,0)
 
 For c=1 To 100
 	New fruit
@@ -406,35 +603,58 @@ Next
 
 done=0
 oldms=MilliSecs()
+'zoom=.2
 While Not done
+
+	panx=s1.x
+	pany=s1.y
 	
-	mx=MouseX()
-	my=MouseY()
+	mx=unzoomx(MouseX())
+	my=unzoomy(MouseY())
 	
 	s1.chase mx,my
+	
+	curscreen.update
 
 	For s:snake=EachIn snakes
 		s.update
 	Next
 	
-	If fruits.count()<100
-		If Rand(5)=1
-			New fruit
-		EndIf
-	EndIf
+	'If fruits.count()<100
+	'	If Rand(5)=1
+	'		New fruit
+	'	EndIf
+	'EndIf
+	
+	For si:sounditem=EachIn sounditems
+		si.update
+	Next
 	
 	SetColor 255,255,255
 	Local poly#[]
-	poly=[0.0,0.0,Float(gwidth),0.0,Float(gwidth),Float(gheight),0.0,Float(gheight)]
-	drawtexturedpoly getpaper("brown"),panuv(poly)
+	x1#=unzoomx(0)
+	y1#=unzoomy(0)
+	x2#=unzoomx(gwidth)
+	y2#=unzoomy(gheight)
+	poly=[x1,y1,x2,y1,x2,y2,x1,y2]
+	drawzoomtexturedpoly getpaper("brown"),panuv(poly)
 	
-	For f:fruit=EachIn fruits
-		f.draw
-	Next
+	'For f:fruit=EachIn fruits
+	'	drawzoomline s1.x,s1.y,f.x,f.y
+	'Next
+	curscreen.draw
 
 	For s:snake=EachIn snakes
 		s.draw
 	Next
+	screenx=Floor(panx/gwidth+.5)
+	screeny=Floor(pany/gheight+.5)
+	dx=screenx-curscreen.sx
+	dy=screeny-curscreen.sy
+	curscreen=curscreen.neighbours(dx+1,dy+1)
+	DrawText dx+","+dy,0,0
+	
+	
 	
 	ms=MilliSecs()
 	fps#=1000.0/(ms-oldms)
@@ -457,21 +677,46 @@ End Function
 
 
 
+Function DrawZoomCircle(x# , y# , radius#)
+	x = zoomx(x) 
+	y = zoomy(y)
+	radius:* zoom
+	DrawOval x - radius , y - radius , 2 * radius , 2 * radius
+End Function
+
+Function DrawZoomLine(ax# , ay# , bx# , by#)
+	ax = zoomx(ax)
+	ay = zoomy(ay)
+	bx = zoomx(bx)
+	by = zoomy(by)
+	DrawLine ax,ay,bx,by
+End Function
+
 Function panuv:Float[] (poly:Float[] ) 
 	Local opoly:Float[Len(poly) * 2] 
 	i = 0
 	While i < Len(poly) 
 		opoly[i * 2] = poly[i] 
 		opoly[i * 2 + 1] = poly[i + 1] 
-		u:Float = poly[i] / gwidth
+		u:Float = ZoomX(poly[i] ) / gwidth
 		'If u < 0 u:+1
-		v:Float = poly[i + 1] / gheight
+		v:Float = ZoomY(poly[i + 1] ) / gheight
 		'If v < 0 v:+1
 		opoly[i * 2 + 2] = u
 		opoly[i * 2 + 3] = v
 		i:+2
 	Wend
 	Return opoly
+End Function
+
+Function DrawZoomTexturedPoly(image:TImage, poly:Float[] ) 
+	poly = poly[..] 
+	While i < Len(poly)
+		poly[i] = ZoomX(poly[i] ) 
+		poly[i + 1] = zoomy(poly[i + 1]) 
+		i:+4
+	Wend
+	DrawTexturedPoly image, poly
 End Function
 
 Function DrawTexturedPoly(image:TImage, xyuv:Float[] , frame = 0, vertex = -1) 
@@ -527,3 +772,19 @@ Function DrawTexturedPolyOGL (Driver:TGLMax2DDriver, Frame:TGLImageFrame, xy#[],
 	If Not tmpImage Then tmpImage = CreateImage(1,1)
 	DrawImage tmpImage, -100, - 100 ' Chtob zbit' flag texturi
 End Function
+
+
+Function ZoomX#(x#)
+	Return (x - panx) * zoom + gwidth / 2
+End Function
+Function ZoomY#(y#)
+	Return (y - pany) * zoom + gheight / 2
+End Function
+
+Function UnzoomX#(x#)
+	Return (x - gwidth / 2) / zoom + panx
+End Function
+Function UnzoomY#(y#)
+	Return (y - gheight / 2) / zoom + pany
+End Function
+
