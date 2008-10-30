@@ -574,6 +574,7 @@ End Function
 gwidth=800
 gheight=400
 AppTitle="Snakey ssss"
+SetGraphicsDriver GLMax2DDriver()
 Graphics gwidth,gheight,0
 SetBlend ALPHABLEND
 
@@ -620,12 +621,6 @@ While Not done
 		s.update
 	Next
 	
-	'If fruits.count()<100
-	'	If Rand(5)=1
-	'		New fruit
-	'	EndIf
-	'EndIf
-	
 	For si:sounditem=EachIn sounditems
 		si.update
 	Next
@@ -639,9 +634,6 @@ While Not done
 	poly=[x1,y1,x2,y1,x2,y2,x1,y2]
 	drawzoomtexturedpoly getpaper("brown"),panuv(poly)
 	
-	'For f:fruit=EachIn fruits
-	'	drawzoomline s1.x,s1.y,f.x,f.y
-	'Next
 	curscreen.draw
 
 	For s:snake=EachIn snakes
@@ -652,13 +644,13 @@ While Not done
 	dx=screenx-curscreen.sx
 	dy=screeny-curscreen.sy
 	curscreen=curscreen.neighbours(dx+1,dy+1)
-	DrawText dx+","+dy,0,0
+'	DrawText dx+","+dy,0,0
 	
 	
 	
 	ms=MilliSecs()
 	fps#=1000.0/(ms-oldms)
-	DrawText fps,700,0
+	'DrawText fps,700,0
 	oldms=ms
 
 	Flip
