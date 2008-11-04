@@ -1,25 +1,69 @@
+Global sounditems:TList
+Type sounditem
+	Field chan:TChannel
+	Field loops
+	Field sound:TSound
+	
+	Function init()
+		sounditems=New TList
+	End Function
+	
+	Function Create:sounditem(sound:TSound,rate#,pan#,volume#,loops=0)
+		si:sounditem=New sounditem
+		si.chan=AllocChannel()
+		SetChannelRate(si.chan,rate)
+		SetChannelPan(si.chan,pan)
+		SetChannelVolume si.chan , volume
+		si.sound = sound
+		si.loops=loops
+		PlaySound(si.sound,si.chan)
+		sounditems.AddLast si
+		Return si
+	End Function
+	
+	Function createrandom(sounds:TSound[],rate#=1,pan#=0,volume#=1,loops=0)
+		i=Rand(0,Len(sounds)-1)
+		sounditem.Create(sounds[i],rate,pan,volume,loops)
+	End Function
+	
+	Method Delete()
+		StopChannel chan
+	End Method
+
+	Method update()	
+		If Not ChannelPlaying(chan)
+			If loops
+				PlaySound sound , chan
+			Else
+				sounditems.Remove self
+			EndIf
+		EndIf
+	End Method
+	
+End Type
+
 Type jsondecoder
 	Field txt$
 	Field i
-	Field curchr$
+	Field curchr
 	Field things:TList
 	
 	Method New()
 		things=New TList
 	End Method
 
-	Method getnext(tokens$[],onlywhitespace=1)
+	Method getnext(tokens[],onlywhitespace=1)
 		oldi=i
 		While i<Len(txt)
-			c$=Chr(txt[i])
+			c=txt[i]
 			i=i+1
-			For token$=EachIn tokens
+			For token=EachIn tokens
 				If c=token 
 					curchr=c
 					Return 1
 				EndIf
 			Next
-			If onlywhitespace And (Not (c=" " Or c="~t" Or c="~n" Or c="~r"))
+			If onlywhitespace And (Not (c=32 Or c=9 Or c=10 Or c=13))
 				i=i-1
 				Return 0
 			EndIf
@@ -36,15 +80,16 @@ Type jsondecoder
 	End Function
 	
 	Method parse()
-		While getnext(["{","["])
+		Global curlyorsquarestart[]=[123,91]
+		While getnext(curlyorsquarestart)
 			Select curchr
-			Case "{" 'new object
+			Case 123 'new object
 				o:jsonobject=parseobject()
 				If Not o
 					Print "error - couldn't parse object"
 				EndIf
 				things.addlast o
-			Case "[" 'new array
+			Case 91 'new array
 				a:jsonarray=parsearray()
 				If Not a
 					Print "error - couldn't parse array"
@@ -56,21 +101,23 @@ Type jsondecoder
 	
 	Method parseobject:jsonobject()
 		o:jsonobject=New jsonobject
-		While getnext(["~q","}"])
+		Global quoteorendcurly[]=[34,125]
+		While getnext(quoteorendcurly)
 			Select curchr
-			Case "~q"
+			Case 34
 				p:jsonpair=parsepair()
 				If Not p
 					Print "error reading pair"
 				EndIf
 				o.pairs.addlast p
-				If Not getnext([",","}"])
+				Global commaorendcurly[]=[44,125]
+				If Not getnext(commaorendcurly)
 					Print "error after reading pair - expected either , or }"
 				EndIf
-				If curchr="}"
+				If curchr=125
 					Return o
 				EndIf
-			Case "}"
+			Case 125
 				Return o
 			End Select
 		Wend
@@ -81,7 +128,8 @@ Type jsondecoder
 	Method parsepair:jsonpair()
 		p:jsonpair=New jsonpair
 		p.name=parsestring()
-		If Not getnext([":"])
+		Global colon[]=[58]
+		If Not getnext(colon)
 			Print "error reading pair - expected a :"
 		EndIf
 		v:jsonvalue=parsevalue()
@@ -94,20 +142,22 @@ Type jsondecoder
 	
 	Method parsearray:jsonarray()
 		a:jsonarray=New jsonarray
-		While getnext(["~q","-","0","1","2","3","4","5","6","7","8","9","{","[","t","f","n","]"])
+		Global valuestarts[]=[34,45,48,49,50,51,52,53,54,55,56,57,123,91,116,102,110,93]
+		While getnext(valuestarts)
 			Select curchr
-			Case "~q","-","0","1","2","3","4","5","6","7","8","9","{","[","t","f","n"
+			Case 34,45,48,49,50,51,52,53,54,55,56,57,123,91,116,102,110
 				i:-1
 				v:jsonvalue=parsevalue()
 				a.values.addlast v
-				If Not getnext([",","]"])
+				Global commaorendsquare[]=[44,93]
+				If Not getnext(commaorendsquare)
 					Print "error - expecting , or ]"
 				EndIf
-				If curchr="]"
+				If curchr=93
 					Return a
 				EndIf
 				
-			Case "]"
+			Case 93
 				Return a
 			End Select
 		Wend
@@ -118,30 +168,31 @@ Type jsondecoder
 		oldi=i
 		s$=""
 		
-		While getnext(["~q","\"],0)
+		Global quoteorbackslash[]=[34,92]
+		While getnext(quoteorbackslash,0)
 			s:+txt[oldi..i-1]
 			Select curchr
-			Case "~q"
+			Case 34
 				Return s
-			Case "\"
-				Select Chr(txt[i])
-				Case "~q"
+			Case 92
+				Select txt[i]
+				Case 34
 					s:+"~q"
-				Case "\"
+				Case 92
 					s:+"\"
-				Case "/"
+				Case 47
 					s:+"/"
-				Case "b"
+				Case 98
 					s:+Chr(8)
-				Case "f"
+				Case 102
 					s:+Chr(12)
-				Case "n"
+				Case 110
 					s:+"~n"
-				Case "r"
+				Case 114
 					s:+"~r"
-				Case "t"
+				Case 116
 					s:+"~t"
-				Case "u"
+				Case 117
 					s:+parseunicode()
 				End Select
 				i:+1
@@ -168,29 +219,30 @@ Type jsondecoder
 	End Method
 	
 	Method parsevalue:jsonvalue()
-		If Not getnext(["~q","-","0","1","2","3","4","5","6","7","8","9","{","[","t","f","n"])
+		Global valuestart[]=[34,45,48,49,50,51,52,53,54,55,56,57,123,91,116,102,110]
+		If Not getnext(valuestart)
 			Print "error - expecting the beginning of a value"
 		EndIf
 		Select curchr
-		Case "~q"
+		Case 34
 			s$=parsestring()
 			Return jsonstringvalue.Create(s,0)
-		Case "-","0","1","2","3","4","5","6","7","8","9"
+		Case 45,48,49,50,51,52,53,54,55,56,57
 			n:Double=parsenumber()
 			Return jsonnumbervalue.Create(n)
-		Case "{"
+		Case 123
 			o:jsonobject=parseobject()
 			Return o
-		Case "["
+		Case 91
 			a:jsonarray=parsearray()
 			Return a
-		Case "t"
+		Case 116
 			i:+3
 			Return jsonliteralvalue.Create(1)
-		Case "f"
+		Case 102
 			i:+4
 			Return jsonliteralvalue.Create(0)
-		Case "n"
+		Case 110
 			i:+2
 			Return jsonliteralvalue.Create(-1)
 		End Select
@@ -200,28 +252,29 @@ Type jsondecoder
 		i:-1
 		sign=1
 		n:Double=0
-		Select Chr(txt[i])
-		Case "-"
+		Global dot[]=[46]
+		Select txt[i]
+		Case 45
 			i:+2
 			Return parsenumber()*(-1)
-		Case "0"
+		Case 48
 			i:+1
-			If getnext(["."])
+			If getnext(dot)
 				n=parsefraction()
 			EndIf
-		Case "1","2","3","4","5","6","7","8","9"
+		Case 49,50,51,52,53,54,55,56,57
 			n=parseinteger()
-			If getnext(["."])
+			If getnext(dot)
 				n:+parsefraction()
 			EndIf
 		End Select
 		
-		If Chr(txt[i])="e" Or Chr(txt[i])="E"
+		If txt[i]=101 Or txt[i]=69
 			i:+1
-			Select Chr(txt[i])
-			Case "+"
+			Select txt[i]
+			Case 43
 				sign=1
-			Case "-"
+			Case 45
 				sign=-1
 			Default
 				Print "error - not a + or - when reading exponent in number"
@@ -396,9 +449,9 @@ Type jsonstringvalue Extends jsonvalue
 			i=0
 			For i=0 To Len(txt)-1
 				Select Chr(txt[i])
-				Case "~q"
+				Case 34
 					otxt:+"\~q"
-				Case "\"
+				Case 92
 					otxt:+"\\"
 				Case "/"
 					otxt:+"\/"
@@ -664,10 +717,11 @@ Type node
 		n.x=j.getnumbervalue("x")
 		n.y=j.getnumbervalue("y")
 
-		n.tree=network.find( j.getnumbervalue("tree") )
+		treenum=j.getnumbervalue("tree")
+		n.tree=network.find( treenum )
 		If Not n.tree
 			n.tree=New network
-			n.tree.number=number
+			n.tree.number=treenum
 			n.tree.count=1
 		EndIf
 
@@ -823,8 +877,10 @@ Type segment
 		se.width=j.getnumbervalue("width")
 		na:jsonarray=j.getarrayvalue("nodes")
 		For no:jsonobject=EachIn na.values
-			se.nodes.addlast node.Load(j)
+			se.nodes.addlast node.Load(no)
 		Next
+		'print se.nodes.count()
+		'print numnodes
 		Return se
 	End Function
 	
@@ -949,7 +1005,6 @@ Type shell
 	
 	Function init()
 		shellsize#=(gwidth+gheight)/2
-		curshell=shell.Create(0)
 	End Function
 	
 	Function Create:shell(level)
@@ -1041,6 +1096,8 @@ Function dorect:TList(x1#,y1#,x2#,y2#)
 	midx#=(x1+x2)/2
 	midy#=(y1+y2)/2
 	midan#=ATan2(midy,midx)
+	
+	rem
 	Local points#[]=[x1,y1,x2,y1,x2,y2,x1,y2,midx,midy]
 	minr=-1
 	maxr=-1
@@ -1057,6 +1114,15 @@ Function dorect:TList(x1#,y1#,x2#,y2#)
 		If diff<minan minan=diff
 		If diff>maxan maxan=diff
 	Next
+	endrem
+	
+	d#=dist(midx,midy)
+	diag#=sqr(gwidth*gwidth+gheight*gheight)/(2*zoom)
+	minr#=d-diag
+	maxr#=d+diag
+	anmove#=atan(2*diag/abs(d-diag))
+	minan=-anmove
+	maxan=anmove
 	
 	minlevel=minr/shellsize
 	maxlevel=maxr/shellsize
@@ -1065,7 +1131,7 @@ Function dorect:TList(x1#,y1#,x2#,y2#)
 	
 	visibles:TList=New TList
 	For se:segment=EachIn segs
-		'se.draw
+		se.draw
 		For n:node=EachIn se.nodes
 			visibles.addlast n
 			If n.up And (Not visibles.contains(n.up))
@@ -1098,6 +1164,7 @@ Type bookmark
 		For b:bookmark=EachIn bookmarks
 			ba.addvalue b.dosave()
 		Next
+		Return ba
 	End Function
 	
 	Method dosave:jsonobject()
@@ -1112,8 +1179,8 @@ Type bookmark
 		For bo:jsonobject=EachIn ba.values
 			b:bookmark=New bookmark
 			b.x=bo.getnumbervalue("x")
-			b.y=bo.getnumbervalue("x")
-			b.an=bo.getnumbervalue("x")
+			b.y=bo.getnumbervalue("y")
+			b.an=bo.getnumbervalue("an")
 		Next
 	End Function
 	
@@ -1182,11 +1249,40 @@ Function dist#(x1#,y1#,x2#=0,y2#=0)
 	Return Sqr(dx*dx+dy*dy)
 End Function
 
+Function pluralise$(single$,number,plural$="")
+	If Not plural plural=single+"s"
+	If number=1 Return single Else Return plural
+End Function
+
 Type tstate
 	Method update()
 	End Method
 	
 	Method draw()
+	End Method
+End Type
+
+Type introstate Extends tstate
+	Method update()
+		If GetChar()
+			state=New defaultstate
+		EndIf
+	End Method
+	
+	Method draw()
+		SetColor 0,0,0
+		SetAlpha .5
+		DrawRect 0,0,gwidth,gheight
+		SetAlpha 1
+		SetColor 255,255,255
+		
+		introtxt$="Penpals!~nThis is a little game that never ends.~n~n~nThe idea is to connect up the dots.~nYou get one point for joining up a pair of dots.~nThe problem is, it costs points to link dots,~nand the cost increases for dots that are further apart.~nPoints are stored by the dots, and can be transferred to any other dot in the same network.~nOne last rule: you can't make a loop in a network.~n~nLeft click and drag between two coloured dots to connect them.~nRight click and drag to move around.~nPress the S key to save a bookmark, which you can come back to by pressing the TAB key.~n~nEnjoy!~n~n~nPress a key to begin."
+		
+		y=100
+		For line$=EachIn introtxt.split("~n")
+			DrawText line,50,y
+			y:+15
+		Next
 	End Method
 End Type
 
@@ -1229,6 +1325,8 @@ Type defaultstate Extends tstate
 	
 	Method draw()
 		If hover
+			setcolor 0,0,255
+			drawzoomcircle hover.x,hover.y,5
 			For n:node=EachIn hover.free(visibles)
 				If hover.costto(n)>1
 					SetColor 255,0,0
@@ -1258,17 +1356,21 @@ Type drawpathstate Extends tstate
 	Method update()
 		If Not MouseDown(1)
 			free:TList=startnode.free(visibles)
-			n:node=node.pick(mx,my,free,20)
+			n:node=node.pick(mx,my,free,40)
 			If n
 				startnode.link(n)
+				sounditem.createrandom(chimes,1,0,.2)
 			EndIf
 			state=New defaultstate
 		EndIf
 	End Method
 	
 	Method draw()
+		SetColor 0,0,255
 		DrawdirLine startnode.x,startnode.y,mx,my
 
+		setcolor 0,0,255
+		drawzoomcircle startnode.x,startnode.y,5
 		For n:node=EachIn startnode.free(visibles)
 			If startnode.costto(n)>1
 				SetColor 255,0,0
@@ -1364,7 +1466,7 @@ Type findrootstate Extends tstate
 				EndIf
 			EndIf
 		Next
-		If closest
+		If closest And closest.up
 			n=closest
 			bookmark.Create(mx,my)
 		Else
@@ -1373,6 +1475,10 @@ Type findrootstate Extends tstate
 	End Method
 	
 	Method update()
+		If Not n.up
+			state=New defaultstate
+			Return
+		EndIf
 		t:+.1
 		tx#=n.x*(1-t)+n.up.x*t
 		ty#=n.y*(1-t)+n.up.y*t
@@ -1386,38 +1492,80 @@ Type findrootstate Extends tstate
 				state=New defaultstate
 			EndIf
 		EndIf
+		
+		If MouseDown(2)
+			state=dragcamstate.Create(zoomx(mx),zoomy(my))
+		EndIf
 	End Method
 End Type
+
+Function loadsounds:TSound[](dirname$)
+	dirhandle=ReadDir(dirname)
+	fname$=NextFile(dirhandle)
+	l:TList=New TList
+	While fname
+		If fname[0]<>46
+			s:TSound=LoadSound(dirname+"/"+fname)
+			l.addlast s
+			'Print fname
+		EndIf
+		fname=NextFile(dirhandle)
+	Wend
+	Local arr:TSound[l.count()]
+	i=0
+	For s:TSound=EachIn l
+		arr[i]=s
+		i:+1
+	Next
+	'Print Len(arr)+" "+dirname+" sounds loaded"
+	Return arr
+End Function
 
 Global mx,my,mz
 Global state:tstate
 Global gwidth,gheight
 
-Function init()
+Global chimes:TSound[]
+Function initgfx()
 	SeedRnd MilliSecs()
-	
+
 	gwidth=800
 	gheight=800
 	AppTitle="Penpals"
 	Graphics gwidth,gheight,0
 	SetBlend ALPHABLEND
+
+	SetAudioDriver "DirectSound"
+	chimes=loadsounds("chimes")
+End Function
+
+Function init()
 	panx#=0
 	pany#=0
 	zoom#=1
 	tzoom#=zoom
 	mz=MouseZ()
 	
+	sounditem.init
+	
 	bookmark.init
 	network.init
 	node.init
-
 	shell.init
 		
 	done=0
 	state=New defaultstate
 End Function
 
+Function newgame()
+	init
+	curshell=shell.Create(0)
+	state=New introstate
+End Function
+
 Function save()
+	oms=MilliSecs()
+	
 	f:TStream=WriteFile("save.txt")
 	
 	j:jsonobject=New jsonobject
@@ -1432,28 +1580,85 @@ Function save()
 	
 	f.WriteLine j.repr()
 	CloseFile f
-	Print "saved"
+	'Print j.repr()
+	
+	time=MilliSecs()-oms
+	Print "took "+(time/1000.0)+" seconds to save"
 End Function
 
 Function Load()
+	oms=MilliSecs()
+
+	f:TStream=ReadFile("save.txt")
+	txt$=""
+	While Not Eof(f)
+		txt:+ReadString(f,10000)
+	Wend
+	
+	time=MilliSecs()-oms
+	Print "took "+(time/1000.0)+" seconds to read file"
+	
+	jd:jsondecoder=jsondecoder.Create(txt)
+	jd.parse
+	
+	time=MilliSecs()-oms
+	Print "took "+(time/1000.0)+" seconds to parse"
+	
+	j:jsonobject=jsonobject(jd.things.first())
+	na:jsonarray=j.getarrayvalue("network")
+	sa:jsonarray=j.getarrayvalue("shell")
+	ba:jsonarray=j.getarrayvalue("bookmark")
+	co:jsonobject=j.getobjectvalue("camera")
+	
+	init
+	nodestolink=New TList
+	network.Load( na )
+	shell.Load( sa )
+	bookmark.Load( ba )
+	
+	For n:node=EachIn nodestolink
+		If n.upnum
+			For n2:node=EachIn nodestolink
+				If n2.number=n.upnum
+					n.up=n2
+					n2.down.addlast n
+					Exit
+				EndIf
+			Next
+		EndIf
+	Next
+	
+	panx=co.getnumbervalue( "x" )
+	pany=co.getnumbervalue( "y" )
+	
+	time=MilliSecs()-oms
+	Print "took "+(time/1000.0)+" seconds to load"
 End Function
 
-
-init
+initgfx
+If FileType("save.txt")
+	Load
+Else
+	newgame
+EndIf
 While Not done
 	mx=unzoomx(MouseX())
 	my=unzoomy(MouseY())
 	
-	'omz=mz
-	'mz=MouseZ()
-	'diff=mz-omz+KeyHit(KEY_UP)-KeyHit(KEY_DOWN)
-	'zoom:*(1-diff*.1)
-	'DrawText mz,400,0
+	omz=mz
+	mz=MouseZ()
+	diff=mz-omz+KeyHit(KEY_UP)-KeyHit(KEY_DOWN)
+	zoom:*(1+diff*.1)
+	DrawText mz,400,0
 	
 	state.update
 	
 	rsize=(shellsize/2)/zoom
 	visibles:TList=dorect( panx-rsize,pany-rsize,panx+rsize,pany+rsize )
+	
+	For si:sounditem=EachIn sounditems
+		si.update
+	Next
 	
 	For n:node=EachIn visibles
 		n.draw
@@ -1465,27 +1670,24 @@ While Not done
 	
 	state.draw
 	
+	If Not introstate(state)
 	SetColor 255,255,255
-	richest:network=Null
 	biggest:network=Null
 	total#=0
-	y=0
+	'y=0
 	For tree:network=EachIn allnetworks
-		If richest=Null Or tree.money>richest.money richest=tree
 		If biggest=Null Or tree.count>biggest.count biggest=tree
-		DrawText tree.money,500,y
-		y:+15
+		'DrawText tree.money,500,y
+		'y:+15
 		total:+tree.money
 	Next
-	DrawText total,500,y
-	If richest
-		DrawText "Richest: "+richest.number+" with "+richest.money,0,0
-	EndIf
+	'DrawText total,500,y
 	If biggest
-		DrawText "Biggest: "+biggest.number+" with "+biggest.count,0,15
+		DrawText "Biggest network: "+biggest.count+" dots",0,0
 	EndIf
-	DrawText allnetworks.count()+" networks",0,30
-	DrawText numnetworks+" points",0,45
+	DrawText allnetworks.count()+" "+pluralise("network",allnetworks.count()),0,30
+	DrawText numnodes+" dots generated",0,45
+	EndIf
 	
 	Flip
 	Cls
@@ -1495,3 +1697,11 @@ While Not done
 		done=1
 	EndIf
 Wend
+
+cls
+txt$="Saving game..."
+drawtext txt,gwidth/2-textwidth(txt)/2,gheight/2
+flip
+
+
+save
