@@ -1,3 +1,5 @@
+Include "charsets.bmx"
+
 Function listsame(l1:TList,l2:TList)
 	If l1.count()<>l2.count() Return False
 	
@@ -24,7 +26,7 @@ Type fsa
 	Method matches:TList(symbol$,l:TList=Null)
 		If Not l l=New TList
 		For t:transition=EachIn transitions
-			If t.symbol=symbol
+			If t.cs.match(symbol)
 				l.addlast t.dest
 			EndIf
 		Next
@@ -43,7 +45,7 @@ Type fsa
 			If f.evaluate(npattern,spaces+" ") Return True
 		Next
 		For t:transition=EachIn transitions
-			If t.symbol=""
+			If t.cs=emptyset
 				Print spaces+"empty move to "+t.dest.name
 				If t.dest.evaluate(pattern,spaces) Return True
 			EndIf
@@ -58,7 +60,7 @@ Type fsa
 		If Not l l=New TList
 		If addself l.addlast(Self)
 		For t:transition=EachIn transitions
-			If t.symbol=""
+			If t.cs=emptyset
 				If Not l.contains(t.dest)
 					l.addlast t.dest
 					t.dest.emptymoves(l)
@@ -82,20 +84,13 @@ Type fsa
 		If checked.contains(f) Return checked
 
 		ntransitions:tmap=New tmap
-		'For f:fsa=EachIn nodes
-		'	For f2:fsa=EachIn f.emptymoves()
-		'		If Not nodes.contains(f2)
-		'			nodes.addlast f2
-		'		EndIf
-		'	Next
-		'Next
 		destinations:TList=New TList
 		
 		For t:transition=EachIn f.transitions
-			If Not ntransitions.contains(t.symbol)
-				ntransitions.insert t.symbol,New TList
+			If Not ntransitions.contains(t.cs.pattern)
+				ntransitions.insert t.cs.pattern,New TList
 			EndIf
-			tl:TList=TList(ntransitions.valueforkey(t.symbol))
+			tl:TList=TList(ntransitions.valueforkey(t.cs.pattern))
 			If Not tl.contains(t.dest)
 				tl.addlast t.dest
 			EndIf
@@ -107,7 +102,6 @@ Type fsa
 		
 		'Rem
 		of:fsa=New fsa
-		of.name="["+f.name+"]"
 		'Print of.name
 		For key$=EachIn ntransitions.keys()
 			If key
@@ -229,53 +223,45 @@ Type fsa
 End Type
 
 Type transition
-	Field symbol$
+	Field cs:charset
 	Field dest:fsa
 	
-	Function Create:transition(symbol$,dest:fsa)
+	Function Create:transition(pattern$,dest:fsa)
 		t:transition=New transition
-		t.symbol=symbol
+		t.cs=charset.Create(pattern)
 		t.dest=dest
 		Return t
 	End Function
 	
 	Method repr$()
-		Return symbol+" -> "+dest.name
+		Return cs.repr()+" -> "+dest.name
 	End Method
 End Type
+
 
 Global numnodes=0
 Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 	Print spaces+"compile: "+pattern
 	
 
-	If Len(pattern)=1
-		Print spaces+"character: "+pattern
-		nf:fsa=New fsa
-		numnodes:+1
-		nf.name=String(numnodes)
-		For f:fsa=EachIn starts
-			f.addtransition pattern,nf
-		Next
-		Return [nf]
-	EndIf
-
 	Local bits$[]
-	Local ends:fsa[],ostarts:fsa[]
+	Local ends:fsa[],ostarts:fsa[],nends:fsa[]
 	bits=splitpipes(pattern)
 	
+	'note that starts is not really a set of starting nodes for the whole machine,
+	'but in fact the previous set of finals.
 
 	If Len(bits)=1
 		While Len(pattern)
 			ostarts=starts
 			symbol$=Chr(pattern[0])
-			Print spaces+">"+symbol
+			'Print spaces+">"+symbol
+			nends=Null
 			Select symbol
 			Case "(" 'start brackets
 				Print spaces+"brackets"
 				inparens=1
 				i=1
-				starti=1
 				While inparens
 					Select Chr(pattern[i])
 					Case "("
@@ -285,13 +271,42 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 					End Select
 					i:+1
 				Wend
-				bit$=pattern[starti..i-1]
+				bit$=pattern[1..i-1]
+				ends=compile(bit,starts,spaces+"  ")
 				pattern=pattern[i..]
+				
+			Case "["
+				Print spaces+"squares"
+				i=1
+				While Chr(pattern[i])<>"]"
+					i:+1
+				Wend
+				bit$=pattern[0..i+1]
+				'Print spaces+bit
+				pattern=pattern[i+1..]
+				nf:fsa=New fsa
+				For f:fsa=EachIn starts
+					f.addtransition bit,nf
+				Next
+				ends=[nf]
+				
 			Default 'normal character
-				bit$=symbol
+				Print spaces+"character: "+symbol
+				mf:fsa=New fsa
+				mf.name="m"
+				nf:fsa=New fsa
+				numnodes:+1
+				nf.name=String(numnodes)
+				For f:fsa=EachIn starts
+					f.addtransition symbol,mf
+				Next
+				mf.addtransition "",nf
+				ends=[mf]
+				nends=[nf]
 				pattern=pattern[1..]
+				
 			End Select
-			ends=compile(bit,starts,spaces+"  ")
+			
 			If Len(pattern)
 				op$=Chr(pattern[0])
 			Else
@@ -306,10 +321,45 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				For f:fsa=EachIn starts
 					f.addtransition "",fin
 					fin.addtransition "",f
+					If nends
+						For f2:fsa=EachIn nends
+							f.addtransition "",f2
+						Next
+					EndIf
+				Next
+				fin2:fsa=New fsa
+				fin.addtransition "",fin2
+				ends=[fin2]
+				pattern=pattern[1..]
+			Case "?" 'zero or one times
+				fin:fsa=New fsa
+				For f:fsa=EachIn starts
+					f.addtransition "",fin
+					If nends
+						For f2:fsa=EachIn nends
+							f.addtransition "",f2
+						Next
+					EndIf
+				Next
+				For f:fsa=EachIn ends
+					f.addtransition "",fin
+				Next
+				ends=[fin]
+				pattern=pattern[1..]
+			Case "+" 'one or more times
+				fin:fsa=New fsa
+				For f:fsa=EachIn ends
+					f.addtransition "",fin
+				Next
+				For f:fsa=EachIn starts
+					fin.addtransition "",f
 				Next
 				ends=[fin]
 				pattern=pattern[1..]
 			End Select
+			If nends
+				ends=nends
+			EndIf
 			starts=ends
 		Wend
 	Else
@@ -355,12 +405,17 @@ End Function
 'splitpipes("a|b+|(b*|a+)|[acd]")
 start:fsa=New fsa
 start.name="s"
-For f:fsa=EachIn compile("(a|b)*c",[start])
+re$="(([1-9]+[0-9]*)|0)(.[0-9]+)?"
+re$="[a-z]*(,? [a-z]*)*"
+re$="[0-9]?[0-9]"
+'re$=Input("re> ")
+For f:fsa=EachIn compile(re,[start])
 	f.accepting=1
 Next
-fsa.powerset(start)
-End
+start=fsa.powerset(start)
+'End
 
+Rem
 Local states:fsa[5]
 For i=0 To 4
 	states[i]=New fsa
@@ -381,10 +436,14 @@ maps:tmap=fsa.collapse(states[0])
 start:fsa=fsa.powerset(states[0])
 'Print f.repr()
 'End
+EndRem
 
-in$=Input(">")
-If start.evaluate(in)
-	Print "Yes"
-Else
-	Print "No"
-EndIf
+in$=""
+While in<>"quit"
+	in$=Input(">")
+	If start.evaluate(in)
+		Print "Yes"
+	Else
+		Print "No"
+	EndIf
+Wend
