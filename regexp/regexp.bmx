@@ -289,7 +289,55 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 					f.addtransition bit,nf
 				Next
 				ends=[nf]
-				
+			Case "\"
+				symbol=Chr(pattern[1])
+				Print "special character "+symbol
+				Local cs:charset
+				Select symbol
+				Case "d" 'digit
+					cs=digits
+				Case "D"
+					cs=nondigits
+				Case "w"
+					cs=alphanum
+				Case "W"
+					cs=nonalphanum
+				Default
+					cs=charset.Create(symbol)
+				End Select
+				Print cs.repr()
+				mf:fsa=New fsa
+				mf.name="m"
+				nf:fsa=New fsa
+				numnodes:+1
+				nf.name=String(numnodes)
+				For f:fsa=EachIn starts
+					tr:transition=New transition
+					tr.cs=cs
+					tr.dest=mf
+					f.transitions.addlast tr
+				Next
+				mf.addtransition "",nf
+				ends=[mf]
+				nends=[nf]
+				pattern=pattern[2..]
+			Case "."
+				Print "any character"
+				mf:fsa=New fsa
+				nf:fsa=New fsa
+				mf.name="m"
+				numnodes:+1
+				nf.name=String(numnodes)
+				For f:fsa=EachIn starts
+					tr:transition=New transition
+					tr.cs=fullset
+					tr.dest=mf
+					f.transitions.addlast tr
+				Next
+				mf.addtransition "",nf
+				ends=[mf]
+				nends=[nf]
+				pattern=pattern[1..]
 			Default 'normal character
 				Print spaces+"character: "+symbol
 				mf:fsa=New fsa
@@ -380,6 +428,8 @@ Function splitpipes$[](pattern$)
 	starti=0
 	While i<Len(pattern)
 		Select Chr(pattern[i])
+		Case "\"
+			i:+1
 		Case "("
 			inparens:+1
 		Case ")"
@@ -405,9 +455,9 @@ End Function
 'splitpipes("a|b+|(b*|a+)|[acd]")
 start:fsa=New fsa
 start.name="s"
-re$="(([1-9]+[0-9]*)|0)(.[0-9]+)?"
-re$="[a-z]*(,? [a-z]*)*"
-re$="[0-9]?[0-9]"
+'re$="(([1-9]+[0-9]*)|0)(.[0-9]+)?"
+'re$="[a-z]*(,? [a-z]*)*"
+re$=".*"
 're$=Input("re> ")
 For f:fsa=EachIn compile(re,[start])
 	f.accepting=1

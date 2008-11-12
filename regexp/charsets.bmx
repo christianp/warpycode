@@ -28,6 +28,7 @@ Type charset
 	Method addrange(low,high)
 		Local range[]=[low,high]
 		ranges.addlast range
+		pattern:+Chr(low)+"-"+Chr(high)
 	End Method
 	
 	Method match(cr$)
@@ -60,6 +61,9 @@ Global digits:charset=charset.Create("0-9")
 Global alphanum:charset=charset.Create("0-9A-Za-z")
 Global nonalphanum:charset=New charset
 Global nondigits:charset=New charset
+Global fullset:charset=New charset
+
+fullset.addrange 0,255
 
 nondigits.addrange 0,47
 nondigits.addrange 58,255 
