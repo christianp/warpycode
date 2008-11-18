@@ -2,47 +2,7 @@ Global gwidth#,gheight#
 Global panx#=0,pany#=0,zoom#=1,tzoom#=zoom
 
 
-'returns True if p1 and p2 are on the same side of the line a->b
-Function sameside(p1x#,p1y#,p2x#,p2y#,ax#,ay#,bx#,by#)
-	cp1# = (bx-ax)*(p1y-ay)-(p1x-ax)*(by-ay)
-	cp2# = (bx-ax)*(p2y-ay)-(p2x-ax)*(by-ay)
-	If cp1*cp2 >= 0 Then Return True
-End Function	
-	
-'Clever little trick for telling if a point is inside a given triangle
-'If for each pair of points AB in the triangle, P is on the same side of AB as 
-'the other point in the triangle, then P is in the triangle. 
-Function pointintriangle(px#,py#,ax#,ay#,bx#,by#,cx#,cy#)
-	If sameside(px,py,ax,ay,bx,by,cx,cy) And sameside(px,py,bx,by,ax,ay,cx,cy) And sameside(px,py,cx,cy,ax,ay,bx,by)
-		Return True
-	Else
-		Return False
-	EndIf
-End Function
 
-Function andiff#(an1#,an2#)
-	dan#=(an1-an2) Mod 360
-	If dan>180 dan:-360
-	If dan<-180 dan:+360
-	Return dan
-End Function
-
-Function inarc(an,an1#,an2#)
-	'If an1>180 Then an1:-360
-	'If an2<180 Then an2:+360
-	d1#=andiff(an2,an1)
-	If d1=0 Then d1=360
-	If d1>0
-		d2#=andiff(an,an1)
-		d3#=-andiff(an,an2)
-		If (d2>=0 And d2<=d1) Or (d3>=0 And d3<=d1)
-			Return 1
-		Else
-		EndIf
-	Else
-		Return 1-inarc(an,an2,an1)
-	EndIf
-End Function
 
 
 Function transformpoly#[](poly#[] , px# , py# , an# , scale# = 1) 
@@ -202,13 +162,4 @@ Function DrawZoomImage(image:TImage , x# , y#,width#,heighto=0)
 	SetScale w*zoom , w*zoom
 	DrawImage image , zoomx(x) , zoomy(y)
 	SetScale 1,1
-End Function
-
-
-'graphics init
-Function initgfx()
-	gwidth=800
-	gheight=600
-	Graphics gwidth , gheight
-	SetBlend ALPHABLEND
 End Function

@@ -36,7 +36,7 @@ Function linesintersect#(ax#,ay#,bx#,by#,cx#,cy#,dx#,dy#,fit=0)
 	Return -1
 End Function
 
-Function pointdistance#(px#,py#,ax#,ay#,bx#,by#)
+Function pointlinedistance#(px#,py#,ax#,ay#,bx#,by#)
 	dx#=bx-ax
 	dy#=by-ay
 	an#=ATan2(dy,dx)
