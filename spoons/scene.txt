@@ -1,0 +1,29 @@
+{
+	"actors": [
+			{ "actor": "narrative",
+			  "name": "intro",
+			  "text": "Once upon a time,\nIn a land called Hamble,\n\nThere was a small boy who liked To fish.\n\nHe went To the shops one day And bought a can of sardines.\n\nHe wanted some oranges as well.\n\nBut they were Not served at the fish counter."
+			},
+			{ "actor": "face",
+			  "name": "santa",
+			  "image": "santahead.png",
+			  "x": 0,
+			  "y": 0
+			}
+		  ],
+		  
+	"states": [
+			{ "name": "start",
+			  "actions": ["intro addcomponent image santa"],
+			  "transitions": [ ["","waitkey"] ]
+			},
+			{ "name": "waitkey",
+			  "actions": [], 
+			  "transitions": [ ["intro finished","finish"], ["user keyhit 32","advance"] ]
+			},
+			{ "name": "advance",
+			  "actions": ["intro advance"],
+			  "transitions": [ ["","waitkey"] ]
+			}
+		  ]
+}
