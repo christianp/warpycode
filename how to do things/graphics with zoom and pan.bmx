@@ -1,3 +1,12 @@
+Strict
+
+Module warpy.gfx
+
+ModuleInfo "Name: Graphics with zoom and pan"
+ModuleInfo "Description: Provides a set of wrapped graphics functions so you can do zoom and pan easily"
+ModuleInfo "License: Public Domain"
+ModuleInfo "Authors: Warpy (Christian Perfect)"
+
 Global gwidth#,gheight#
 Global panx#=0,pany#=0,zoom#=1,tzoom#=zoom
 

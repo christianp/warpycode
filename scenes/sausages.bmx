@@ -365,9 +365,9 @@ Type gelnode
 			newx=x
 			newy=y
 			d#=Sqr(dx*dx+dy*dy)
-			If d>1
+			'If d>1
 				stuck=0
-			EndIf
+			'EndIf
 		EndIf
 		
 		If Not stuck
@@ -658,14 +658,14 @@ Type geltri
 	
 	Method draw()
 		
-		'SetAlpha .2
+		SetAlpha .2
 		SetColor 255,255,255
 		Local poly#[]
 		poly=[zoomx(g1.x),zoomy(g1.y),g1.u,g1.v,zoomx(g2.x),zoomy(g2.y),g2.u,g2.v,zoomx(g3.x),zoomy(g3.y),g3.u,g3.v]
 		drawtexturedpoly img,poly
 		
 		poly=[zoomx(g1.x),zoomy(g1.y),zoomx(g2.x),zoomy(g2.y),zoomx(g3.x),zoomy(g3.y)]
-		'DrawPoly poly
+		DrawPoly poly
 
 
 		SetAlpha 1
@@ -768,7 +768,7 @@ initgame()
 
 
 
-While Not KeyHit(KEY_ESCAPE) Or AppTerminate()
+While Not (KeyHit(KEY_ESCAPE) Or AppTerminate())
 	updateworld()
 	
 	drawworld()

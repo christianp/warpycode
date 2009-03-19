@@ -97,31 +97,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.03002929687500,
 								"home" :        "Antwerp",
 								"name" :        "the citizens of Antwerp",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1002
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.02001953125000
 				},
 				{
 					"name" :        "Augsburg",
@@ -140,31 +128,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.02502441406250,
 								"home" :        "Augsburg",
 								"name" :        "the citizens of Augsburg",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1003
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01000976562500
 				},
 				{
 					"name" :        "Barcelona",
@@ -186,31 +162,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.00500488281250,
 								"home" :        "Barcelona",
 								"name" :        "the citizens of Barcelona",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1001
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320
 				},
 				{
 					"name" :        "Bergen",
@@ -234,31 +198,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.02502441406250,
 								"home" :        "Bergen",
 								"name" :        "the citizens of Bergen",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1001
+								"population" :  1002
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01501464843750
 				},
 				{
 					"name" :        "Bristol",
@@ -282,31 +234,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.02502441406250,
 								"home" :        "Bristol",
 								"name" :        "the citizens of Bristol",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1003
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01501464843750
 				},
 				{
 					"name" :        "Cadiz",
@@ -328,31 +268,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.02999877929687,
 								"home" :        "Cadiz",
 								"name" :        "the citizens of Cadiz",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1006
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01000976562500
 				},
 				{
 					"name" :        "Cologne",
@@ -379,31 +307,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.01501464843750,
 								"home" :        "Cologne",
 								"name" :        "the citizens of Cologne",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1001
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01000976562500
 				},
 				{
 					"name" :        "Danzig",
@@ -427,31 +343,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.08499145507812,
 								"home" :        "Danzig",
 								"name" :        "the citizens of Danzig",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1003
+								"population" :  1006
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.05999755859375
 				},
 				{
 					"name" :        "Genoa",
@@ -473,31 +377,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.03002929687500,
 								"home" :        "Genoa",
 								"name" :        "the citizens of Genoa",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1001
+								"population" :  1002
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.02001953125000
 				},
 				{
 					"name" :        "Hamburg",
@@ -521,31 +413,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.03002929687500,
 								"home" :        "Hamburg",
 								"name" :        "the citizens of Hamburg",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1005
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.01501464843750
 				},
 				{
 					"name" :        "Lisbon",
@@ -570,31 +450,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.01000976562500,
 								"home" :        "Lisbon",
 								"name" :        "the citizens of Lisbon",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1001
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.00500488281250
 				},
 				{
 					"name" :        "London",
@@ -614,20 +482,20 @@
 							},
 					"residents" :   [
 								{
-									"money" :       450,
+									"money" :       0,
 									"home" :        "London",
 									"name" :        "Player",
 									"numbought" :   0,
 									"warehouse" :   {
-												"cow" :         0,
 												"beef" :        0,
+												"cow" :         0,
+												"chocolate" :   0,
 												"barley" :      0,
 												"hop" :         0,
 												"ale" :         0,
 												"wool" :        0,
 												"cloth" :       0,
 												"cocoa" :       0,
-												"chocolate" :   0,
 												"spice" :       0,
 												"silk" :        0,
 												"tea" :         0,
@@ -636,6 +504,54 @@
 											},
 									"type" :        "merchant",
 									"employer" :    "",
+									"inbox" :       [
+											],
+									"sentences" :   [
+											],
+									"routines" :    [
+											],
+									"outletters" :  {
+											},
+									"prices" :      {
+											},
+									"numtosell" :   {
+											},
+									"employees" :   [
+												"Danel"
+											],
+									"contacts" :    [
+												"Danel"
+											],
+									"factories" :   [
+											],
+									"numsold" :     {
+											},
+									"contracts" :   [
+											]
+								},
+								{
+									"money" :       450,
+									"home" :        "London",
+									"name" :        "Danel",
+									"numbought" :   0,
+									"warehouse" :   {
+												"beef" :        0,
+												"cow" :         0,
+												"chocolate" :   0,
+												"barley" :      0,
+												"hop" :         0,
+												"ale" :         0,
+												"wool" :        0,
+												"cloth" :       0,
+												"cocoa" :       0,
+												"spice" :       0,
+												"silk" :        0,
+												"tea" :         0,
+												"cane" :        0,
+												"sugar" :       0
+											},
+									"type" :        "merchant",
+									"employer" :    "Player",
 									"inbox" :       [
 											],
 									"sentences" :   [
@@ -664,20 +580,20 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       355,
+								"money" :       375.03503417968750,
 								"home" :        "London",
 								"name" :        "the citizens of London",
 								"numbought" :   0,
 								"warehouse" :   {
+											"beef" :        160,
 											"cow" :         0,
-											"beef" :        192,
+											"chocolate" :   0,
 											"barley" :      0,
 											"hop" :         0,
 											"ale" :         0,
 											"wool" :        0,
 											"cloth" :       0,
 											"cocoa" :       0,
-											"chocolate" :   0,
 											"spice" :       0,
 											"silk" :        0,
 											"tea" :         0,
@@ -685,10 +601,10 @@
 											"sugar" :       0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1003
 							},
 					"taxdate" :     30,
-					"economy" :     800
+					"economy" :     820.02001953125000
 				},
 				{
 					"name" :        "Lyons",
@@ -709,31 +625,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.00500488281250,
 								"home" :        "Lyons",
 								"name" :        "the citizens of Lyons",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1001
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320
 				},
 				{
 					"name" :        "Naples",
@@ -754,31 +658,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.04501342773437,
 								"home" :        "Naples",
 								"name" :        "the citizens of Naples",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1001
+								"population" :  1004
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.02502441406250
 				},
 				{
 					"name" :        "Paris",
@@ -797,31 +689,19 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325.05999755859375,
 								"home" :        "Paris",
 								"name" :        "the citizens of Paris",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1001
+								"population" :  1005
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320.03500366210937
 				},
 				{
 					"name" :        "Venice",
@@ -843,34 +723,22 @@
 							],
 					"reported" :    0,
 					"populace" :    {
-								"money" :       305,
+								"money" :       325,
 								"home" :        "Venice",
 								"name" :        "the citizens of Venice",
 								"numbought" :   0,
 								"warehouse" :   {
-											"cow" :         0,
-											"beef" :        192,
-											"barley" :      0,
-											"hop" :         0,
-											"ale" :         0,
-											"wool" :        0,
-											"cloth" :       0,
-											"cocoa" :       0,
-											"chocolate" :   0,
-											"spice" :       0,
-											"silk" :        0,
-											"tea" :         0,
-											"cane" :        0,
-											"sugar" :       0
+											"beef" :        160,
+											"ale" :         0
 										},
 								"type" :        "pleb",
-								"population" :  1000
+								"population" :  1002
 							},
 					"taxdate" :     30,
-					"economy" :     300
+					"economy" :     320
 				}
 			],
-	"date" :        1,
+	"date" :        5,
 	"player" :      "Player",
 	"tycoons" :     [
 			]
