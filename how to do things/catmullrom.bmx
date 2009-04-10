@@ -75,7 +75,7 @@ EndRem
 Type point
 	Field x#,y#
 	
-	Function create:point(x#,y#)
+	Function Create:point(x#,y#)
 		p:point=New point
 		p.x=x
 		p.y=y
@@ -155,7 +155,7 @@ s:romspline = New romspline
 While Not KeyHit(KEY_ESCAPE)
 
 	If MouseHit(1)
-		s.addpoint(point.create(MouseX(),MouseY()))
+		s.addpoint(point.Create(MouseX(),MouseY()))
 	EndIf
 	
 	s.draw()
