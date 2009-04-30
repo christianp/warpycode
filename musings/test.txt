@@ -1,0 +1,45 @@
+a drawable is a thing
+	belongs to a list
+	can draw
+	can update
+		add velocity to position
+
+a ship is a kind of drawable
+	belongs to a list
+	requires a name
+	requires a position
+	has many friend ships
+	has many bullets
+	has a velocity
+	has a direction number
+	can shoot
+		make a bullet
+	can turn
+	can accelerate
+	
+a bullet is a kind of drawable
+	belongs to a ship
+	requires a position
+	has a velocity
+	inherits velocity
+	inherits position
+
+an asteroid is a kind of drawable
+	belongs to a list
+	requires a position
+	requires a velocity
+	requires a radius number
+	can attract
+		takes an asteroid
+	can update
+		attract every other asteroid
+
+a dude is a thing
+	
+main loop
+	update every drawable
+	draw every drawable
+	
+velocity is a vector
+position is a vector
+name is a string

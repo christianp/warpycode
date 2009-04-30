@@ -1,0 +1,35 @@
+thingname :: thingname :: ~alphanum~;
+
+$ :: isa :: ~thingname~ is a ~thingname~;
+$ :: isa :: an ~thingname~ is a ~thingname~;
+$ :: isa :: a ~thingname~ is a ~thingname~;
+
+$ :: kindof :: ~thingname~ is a kind of ~thingname~;
+$ :: kindof :: a ~thingname~ is a kind of ~thingname~;
+$ :: kindof :: an ~thingname~ is a kind of ~thingname~;
+
+$ :: hasa :: has a ~property~;
+$ :: hasa :: has an ~property~;
+
+$ :: requiresa :: requires a ~property~;
+$ :: requiresa :: requires an ~property~;
+
+$ :: hasmany :: has many ~property~;
+property :: single :: ~thingname~;
+property :: double :: ~thingname~ ~thingname~;
+
+$ :: can :: can ~thingname~;
+$ :: inherits :: inherits ~thingname~;
+
+$ :: makea :: make a ~thingname~;
+$ :: belongs :: belongs to a ~thingname~;
+
+$ :: addvector :: add ~thingname~ to ~thingname~;
+
+$ :: mainloop :: main loop;
+
+$ :: doevery :: ~thingname~ every ~thingname~;
+$ :: doeveryother :: ~thingname~ every other ~thingname~;
+
+$ :: takesa :: takes a ~thingname~;
+$ :: takesa :: takes an ~thingname~;

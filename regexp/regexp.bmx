@@ -34,9 +34,9 @@ Type fsa
 	End Method
 	
 	Method evaluate(pattern$,spaces$="")
-		Print spaces+name+"?"+pattern
+		rdebugo spaces+name+"?"+pattern
 		If Not pattern
-			Print "end at "+name
+			rdebugo "end at "+name
 			Return accepting
 		EndIf
 		symbol$=Chr(pattern[0])
@@ -46,12 +46,12 @@ Type fsa
 		Next
 		For t:transition=EachIn transitions
 			If t.cs=emptyset
-				Print spaces+"empty move to "+t.dest.name
+				rdebugo spaces+"empty move to "+t.dest.name
 				If t.dest.evaluate(pattern,spaces) Return True
 			EndIf
 		Next
 		
-		Print spaces+"fail at "+name
+		rdebugo spaces+"fail at "+name
 
 		Return False
 	End Method
@@ -102,7 +102,7 @@ Type fsa
 		
 		'Rem
 		of:fsa=New fsa
-		'Print of.name
+		'rdebugo of.name
 		For key$=EachIn ntransitions.keys()
 			If key
 				tl:TList=TList(ntransitions.valueforkey(key))
@@ -119,7 +119,7 @@ Type fsa
 					tname:+f2.name
 				Next
 				tname="{"+tname+"}"
-				'Print "  "+key+" -> "+tname
+				'rdebugo "  "+key+" -> "+tname
 			EndIf
 		Next
 		'EndRem
@@ -146,7 +146,7 @@ Type fsa
 			Next
 			nf:fsa=New fsa
 			nf.name=ziplist(l)
-			'Print "new node "+nf.name
+			'rdebugo "new node "+nf.name
 			allnodes.insert l,nf
 			If adding
 				newnodes.addlast l
@@ -178,7 +178,7 @@ Type fsa
 			If Not outstart outstart=nf
 			
 			nf.name=ziplist(l)
-			'Print "constructing "+nf.name
+			'rdebugo "constructing "+nf.name
 			
 			ntransitions:tmap=New tmap
 			
@@ -209,12 +209,12 @@ Type fsa
 				df:fsa=findnode(TList(ntransitions.valueforkey(key)))
 				nf.addtransition key,df
 			Next
-			'Print nf.repr()
+			'rdebugo nf.repr()
 		Wend
 		
-		Print "ALL NODES"
+		rdebugo "ALL NODES"
 		For f:fsa=EachIn allnodes.values()
-			Print f.repr()
+			rdebugo f.repr()
 		Next
 		
 		Return outstart
@@ -241,7 +241,7 @@ End Type
 
 Global numnodes=0
 Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
-	Print spaces+"compile: "+pattern
+	rdebugo spaces+"compile: "+pattern
 	
 
 	Local bits$[]
@@ -255,11 +255,11 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 		While Len(pattern)
 			ostarts=starts
 			symbol$=Chr(pattern[0])
-			'Print spaces+">"+symbol
+			'rdebugo spaces+">"+symbol
 			nends=Null
 			Select symbol
 			Case "(" 'start brackets
-				Print spaces+"brackets"
+				rdebugo spaces+"brackets"
 				inparens=1
 				i=1
 				While inparens
@@ -276,13 +276,13 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				pattern=pattern[i..]
 				
 			Case "["
-				Print spaces+"squares"
+				rdebugo spaces+"squares"
 				i=1
 				While Chr(pattern[i])<>"]"
 					i:+1
 				Wend
 				bit$=pattern[0..i+1]
-				'Print spaces+bit
+				'rdebugo spaces+bit
 				pattern=pattern[i+1..]
 				nf:fsa=New fsa
 				For f:fsa=EachIn starts
@@ -291,7 +291,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				ends=[nf]
 			Case "\"
 				symbol=Chr(pattern[1])
-				Print "special character "+symbol
+				rdebugo "special character "+symbol
 				Local cs:charset
 				Select symbol
 				Case "d" 'digit
@@ -305,7 +305,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				Default
 					cs=charset.Create(symbol)
 				End Select
-				Print cs.repr()
+				rdebugo cs.repr()
 				mf:fsa=New fsa
 				mf.name="m"
 				nf:fsa=New fsa
@@ -322,7 +322,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				nends=[nf]
 				pattern=pattern[2..]
 			Case "."
-				Print "any character"
+				rdebugo "any character"
 				mf:fsa=New fsa
 				nf:fsa=New fsa
 				mf.name="m"
@@ -339,7 +339,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				nends=[nf]
 				pattern=pattern[1..]
 			Default 'normal character
-				Print spaces+"character: "+symbol
+				rdebugo spaces+"character: "+symbol
 				mf:fsa=New fsa
 				mf.name="m"
 				nf:fsa=New fsa
@@ -411,7 +411,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 			starts=ends
 		Wend
 	Else
-		Print spaces+"pipes"
+		rdebugo spaces+"pipes"
 		For bit$=EachIn bits
 			ends:+compile(bit,starts,spaces+"  ")
 		Next
@@ -421,7 +421,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 End Function
 
 Function splitpipes$[](pattern$)
-	'Print pattern
+	'rdebugo pattern
 	inparens=0
 	i=0
 	Local bits$[0]
@@ -447,17 +447,26 @@ Function splitpipes$[](pattern$)
 	EndIf
 	
 	'For bit$=EachIn bits
-	'	Print bit
+	'	rdebugo bit
 	'Next
 	Return bits
 End Function
+
+Global rdebugging=0
+Function rdebugo(txt$)
+	If rdebugging
+		Print txt
+	EndIf
+End function
+
 
 'splitpipes("a|b+|(b*|a+)|[acd]")
 start:fsa=New fsa
 start.name="s"
 're$="(([1-9]+[0-9]*)|0)(.[0-9]+)?"
 're$="[a-z]*(,? [a-z]*)*"
-re$=".*"
+'re$=".*"
+re$="[a-zA-Z]+(.[a-zA-Z]+)?"
 're$=Input("re> ")
 For f:fsa=EachIn compile(re,[start])
 	f.accepting=1
@@ -484,7 +493,7 @@ states[3].addtransition "0",states[2]
 
 maps:tmap=fsa.collapse(states[0])
 start:fsa=fsa.powerset(states[0])
-'Print f.repr()
+'rdebugo f.repr()
 'End
 EndRem
 

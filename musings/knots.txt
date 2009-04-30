@@ -1,0 +1,14 @@
+a knot is a thing
+	belongs to a list
+	has many threads
+	requires a position
+	can update
+	
+a fixedknot is a kind of knot
+	belongs to a list
+	
+a thread is a thing
+	has a k1 knot
+	has a k2 knot
+	
+position is a vector
