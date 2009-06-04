@@ -144,8 +144,8 @@ End Function
 
 'the important bit! call this with a list or a tquery, and a condition
 'if you pass in a tquery, the new condition will be added to any previous ones.
-Function filter:tquery(o:Object,cond$)
-	c:tcondition=condition(cond)
+Function filter:tquery(o:Object,cond$,s:httpsession=Null)
+	c:tcondition=condition(cond,s)
 	If tquery(o)
 		Return tquery(o).addcondition(c)
 	ElseIf TList(o)
@@ -228,48 +228,54 @@ Type TQuery
 	End Method
 End Type
 
-	Function condition:tcondition(cond$)
-		cond=Trim(shunt(cond))
-		'Print condition
-		Local bits$[]=cond.split(" ")
-		Local stack:TList=New TList
-		While i<Len(bits)
-			Select bits[i]
-			Case "!","not"
-				c:tcondition=tcondition(stack.removelast())
-				stack.addlast notcondition.Create(c)
-			Case "&","and"
-				c1:tcondition=tcondition(stack.removelast())
-				c2:tcondition=tcondition(stack.removelast())
-				stack.addlast andcondition.Create(c1,c2)
-			Case "|","or"
-				c1:tcondition=tcondition(stack.removelast())
-				c2:tcondition=tcondition(stack.removelast())
-				stack.addlast orcondition.Create(c1,c2)
-			Case "="
-				value$=String(stack.removelast())
-				fields$=String(stack.removelast())
-				'Print fields+" = "+value
-				stack.addlast eqcondition.Create(fields,value)
-			Case "<"
-				value$=String(stack.removelast())
-				fields$=String(stack.removelast())
-				'Print fields+" = "+value
-				stack.addlast ltcondition.Create(fields,Double(value))
-			Case ">"
-				'Print "EQUAL"
-				value$=String(stack.removelast())
-				fields$=String(stack.removelast())
-				'Print fields+" = "+value
-				stack.addlast gtcondition.Create(fields,Double(value))
-			Default
-				stack.addlast bits[i]
-			End Select			
-			i:+1
-		Wend
-		c:tcondition = tcondition(stack.removelast())
-		Return c
-	End Function
+Function condition:tcondition(cond$,s:httpsession)
+	cond=Trim(shunt(cond))
+	'Print condition
+	Local bits$[]=cond.split(" ")
+	Local stack:TList=New TList
+	While i<Len(bits)
+		Select bits[i]
+		Case "!","not"
+			c:tcondition=tcondition(stack.removelast())
+			stack.addlast notcondition.Create(c)
+		Case "&","and"
+			c1:tcondition=tcondition(stack.removelast())
+			c2:tcondition=tcondition(stack.removelast())
+			stack.addlast andcondition.Create(c1,c2)
+		Case "|","or"
+			c1:tcondition=tcondition(stack.removelast())
+			c2:tcondition=tcondition(stack.removelast())
+			stack.addlast orcondition.Create(c1,c2)
+		Case "="
+			value$=String(stack.removelast())
+			fields$=String(stack.removelast())
+			Local obj:Object
+			If s
+				obj=s.getinfo(value)
+			Else
+				obj=value
+			EndIf
+			'Print fields+" = "+value
+			stack.addlast eqcondition.Create(fields,obj)
+		Case "<"
+			value$=String(stack.removelast())
+			fields$=String(stack.removelast())
+			'Print fields+" = "+value
+			stack.addlast ltcondition.Create(fields,Double(value))
+		Case ">"
+			'Print "EQUAL"
+			value$=String(stack.removelast())
+			fields$=String(stack.removelast())
+			'Print fields+" = "+value
+			stack.addlast gtcondition.Create(fields,Double(value))
+		Default
+			stack.addlast bits[i]
+		End Select			
+		i:+1
+	Wend
+	c:tcondition = tcondition(stack.removelast())
+	Return c
+End Function
 
 Type tcondition
 	Method appliesto(d:Object) Abstract
@@ -352,7 +358,7 @@ Type eqcondition Extends fieldcondition
 
 	Method appliesto(d:Object)
 		'Print " ".join(fields)+" = "+value+"? "+(String(getfield(d))=value)
-		Print String(getfield(d))+"="+String(value)+" ?"
+		'rint String(getfield(d))+"="+String(value)+" ?"
 		Return (Not getfield(d).compare(value))
 	End Method
 End Type
@@ -402,6 +408,7 @@ Type dude
 	End Function
 End Type
 
+Rem
 l:TList=New TList
 l.addlast dude.Create("Jim",1)
 l.addlast dude.Create("Mike",2)
@@ -436,3 +443,4 @@ While 1
 		Print d.number+": "+d.name
 	Next
 Wend
+endrem

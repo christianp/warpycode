@@ -1,12 +1,14 @@
 'based on James Boyd's BlitzServe 2
 
 Include "regexp.bmx"
+Include "list filter.bmx"
 Include "iterator.bmx"
 
 Include "session.bmx"
 Include "routes.bmx"
 Include "render_shortcuts.bmx"
 Include "template.bmx"
+Include "template_parsing.bmx"
 
 
 'Global ThreadListMutex:TMutex = CreateMutex ()
@@ -150,6 +152,16 @@ Function ProcessConnection:Object (obj:Object)
 
 	Until incoming = "" ' Got blank line after headers, so all done here...
 
+
+	If s.req.headers.contains("cookie")
+		cookie$=s.req.header("cookie")
+		Local cookies$[]=cookie.split(";")
+		For cookie=EachIn cookies
+			bits=Trim(cookie).split("=")
+			s.req.cookies.insert bits[0],"=".join(bits[1..])
+		Next
+	EndIf
+
 	Print ""
 	Local size=Int(s.req.header("content-length"))
 	Print "body size: "+size
@@ -158,10 +170,13 @@ Function ProcessConnection:Object (obj:Object)
 		bits=s.req.body.split("&")
 		For bit$=EachIn bits
 			Local i=bit.find("=")
-			s.req.data.insert Trim(Lower(bit[..i])),bit[i+1..]
+			s.req.data.insert Trim(Lower(bit[..i])),unhexurl(Replace(bit[i+1..],"+"," "))
 		Next
 	EndIf
 
+	If init
+		init s
+	endif
 	s.Respond
 
 	KillConnection c
@@ -250,71 +265,75 @@ End Function
 
 
 
-
-
-
-
-Function start_server:tsocket(port=80)
-	Local server:TSocket = CreateTCPSocket ()
+Type tserver
+	Field socket:tsocket
+	Field init(s:httpsession)
 	
-	If server
-	
-		If BindSocket (server, port)
-	
-			SocketListen server, 5
-			
-			Print "server started and running and going"
-			Return server	
-		Else
-			Print "Couldn't bind to port 80!"
-		EndIf
+	Function Create:tserver(port=80,init(s:httpsession)=Null)
+		Local server:TSocket = CreateTCPSocket ()
 		
-	Else
-	
-		Print "Couldn't create server!..."
+		If server
 		
-	EndIf
-End Function
-
-Function run_server(server:tsocket)
-	Repeat
-		Local remote:TSocket = SocketAccept (server)
-		If remote
-			processconnection remote
-		EndIf
-		Rem
-		If remote
-			thread = CreateThread (ProcessConnection, remote)
-			ListAddLast ThreadList, thread	
-		EndIf
+			If BindSocket (server, port)
 		
-		For thread = EachIn ThreadList
-			If Not ThreadRunning (thread)
-				ListRemove ThreadList, thread
+				SocketListen server, 5
+				
+				Print "server started and running and going"
+				s:tserver=New tserver
+				s.socket=server
+				s.init=init
+				Return s	
+			Else
+				Print "Couldn't bind to port 80!"
 			EndIf
-		Next
-		EndRem
-
-		'Delay 10
-		'Cls
-		'DrawText "Direct ESC to this window, not IDE!", 20, 20
-		'Flip
-		
-	Forever
-
-					
 			
-	Print ""
-	Print "Waiting for connections to close..."
-	
-	Rem
-	LockMutex ThreadListMutex
-		For thread = EachIn ThreadList
-			WaitThread thread
-		Next
-	UnlockMutex ThreadListMutex
-	EndRem
-	
-	CloseSocket server
-End Function
+		Else
+		
+			Print "Couldn't create server!..."
+			
+		EndIf
+	End Function
 
+	Method run()
+		Repeat
+			Local remote:TSocket = SocketAccept (socket)
+			If remote
+				processconnection remote
+			EndIf
+			Rem
+			If remote
+				thread = CreateThread (ProcessConnection, remote)
+				ListAddLast ThreadList, thread	
+			EndIf
+			
+			For thread = EachIn ThreadList
+				If Not ThreadRunning (thread)
+					ListRemove ThreadList, thread
+				EndIf
+			Next
+			EndRem
+	
+			Delay 10
+			'Cls
+			'DrawText "Direct ESC to this window, not IDE!", 20, 20
+			'Flip
+			
+		Forever
+	
+						
+				
+		Print ""
+		Print "Waiting for connections to close..."
+		
+		Rem
+		LockMutex ThreadListMutex
+			For thread = EachIn ThreadList
+				WaitThread thread
+			Next
+		UnlockMutex ThreadListMutex
+		EndRem
+		
+		CloseSocket socket
+	End Method
+	
+End Type

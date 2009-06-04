@@ -528,6 +528,7 @@ End Function
 Rem
 rdebugging=1
 re$="([a-zA-Z]+)(\.[a-zA-Z]+)?[0-9]"
+re$="~q(.*)~q"
 're$="/([a-zA-Z]+)/([a-zA-Z]+)"
 start:fsa=fsa.Create(re)
 

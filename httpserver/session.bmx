@@ -1,3 +1,6 @@
+Global stringre:fsa=fsa.Create("~q(.*)~q")
+Global numberre:fsa=fsa.Create("(0|1[0-9]*)(.[1-9][0-9]*)?")
+
 Type HTTPRequest
 	Field meth$
 	Field path$
@@ -6,10 +9,12 @@ Type HTTPRequest
 	Field body$
 	Field headers:tmap
 	Field data:tmap
+	Field cookies:tmap
 	
 	Method New()
 		headers=New tmap
 		data=New tmap
+		cookies=New tmap
 	End Method
 	
 	Method Create:HTTPRequest(_meth$,_path$,_http$)
@@ -18,6 +23,12 @@ Type HTTPRequest
 		pathbits=path.split("/")
 		http=_http
 		Return Self
+	End Method
+	
+	Method cookie$(name$)
+		If cookies.contains(name)
+			Return String(cookies.valueforkey(Lower(name)))
+		EndIf
 	End Method
 	
 	Method header$(name$)
@@ -37,6 +48,7 @@ End Type
 Type HTTPResponse
 	Field status$
 	Field headers:tmap
+	Field cookies:TList
 	Field body$
 	
 	Method New()
@@ -44,6 +56,7 @@ Type HTTPResponse
 		headers=New tmap
 		headers.insert "content-type","text/html"
 		headers.insert "connection","close"
+		cookies=New TList
 	End Method
 	
 	Method output$()
@@ -54,8 +67,11 @@ Type HTTPResponse
 
 		out:+"HTTP/1.1 "+status+"~n"
 		headers.insert "content-length",String(Len(body))
-		For Local key$=EachIn headers.keys()
+		For key$=EachIn headers.keys()
 			out:+key+": "+String(headers.valueforkey(key))+"~n"
+		Next
+		For cookie$=EachIn cookies
+			out:+"set-cookie: "+cookie+"~n"
 		Next
 
 		out:+"~n"+body		
@@ -74,6 +90,8 @@ Type HTTPSession
 	Method New()
 		res=New HTTPResponse
 		labels=New tmap
+		info=New tmap
+		info.insert "session",Self
 	End Method
 	
 	Function Create:HTTPSession(c:connection)
@@ -89,8 +107,6 @@ Type HTTPSession
 		Print "Requested HTTP version: " + req.http
 		Print "body: "+req.body
 		
-		info=labels.copy()
-		info.insert "session",Self
 		
 		If req.http$ <> "HTTP/1.1"
 			render_error "505 This server only accepts HTTP version 1.1"
@@ -104,7 +120,7 @@ Type HTTPSession
 				If Not controller
 					render_error "404 Route did not define a controller"
 				Else
-					Print controller
+					'Print controller
 					tt:TTypeId=TTypeId.ForName(controller)
 					If tt
 						action$=label("action")
@@ -124,8 +140,10 @@ Type HTTPSession
 				EndIf
 			EndIf
 		EndIf
-		Print "finished"
+		'Print "finished"
+		Print "~n"
 		
+		Rem
 		If labels
 			render "<div><p>debug info: Labels<br/><ul>"
 			For key$=EachIn labels.keys()
@@ -133,6 +151,7 @@ Type HTTPSession
 			Next
 			render "</ul></p></div>"
 		EndIf
+		EndRem
 		
 		c.WriteLine res.output()
 	End Method
@@ -140,6 +159,88 @@ Type HTTPSession
 	Method label$(name$)
 		If labels.contains(name)
 			Return String(labels.valueforkey(name))
+		EndIf
+	End Method
+	
+		
+	Method getinfo:Object(name$)
+		'Print "getinfo "+name
+		name=Trim(name)
+		l:TList=New TList
+		If stringre.evaluate(name,"",l)	'string literal
+			'Print "MATCH STRING"
+			For b$=EachIn l
+				Print b
+			Next
+			Return l.removelast()
+		EndIf
+		l:TList=New TList
+		If numberre.evaluate(name)	'int literal
+			Return name
+		EndIf
+		Local bits$[]=splitargs(name,".")
+		If info.contains(bits[0])
+			o:Object=info.valueforkey(bits[0])
+			If Not o Return Null
+			'Print "object "+bits[0]
+			Return getproperty(o,bits[1..])
+		Else
+			Return Null
+		EndIf
+	End Method
+	
+	
+	Method getproperty:Object(o:Object,bits$[])
+		tt:TTypeId=TTypeId.ForObject(o)
+		'Print "  "+tt.name()+": "+".".join(bits)
+		If Not Len(bits)
+			Return o
+		EndIf
+		f:TField=tt.findfield(bits[0])
+		If f
+			Select f.typeid()
+			Case StringTypeId
+				'Print "  stringfield"
+				Return f.getstring(o)
+			Case IntTypeId
+				'Print "  intfield"
+				Return String(f.getint(o))
+			Case FloatTypeId
+				'Print "  floatfield"
+				Return String(f.getfloat(o))
+			Case DoubleTypeId
+				'Print "  doublefield"
+				Return String(f.getdouble(o))
+			Case LongTypeId
+				'Print "  longfield"
+				Return String(f.getlong(o))
+			Default
+				'Print "  objectfield"
+				o:Object=f.get(o)
+				Return getproperty(o,bits[1..])
+			End Select
+		Else
+			Local args:Object[]=parsefunction(bits[0])
+			Local mname$
+			If args
+				'Print "function with arguments!"
+				For arg$=EachIn args
+					Print arg
+				Next
+				mname$=String(args[0])
+				args=args[1..]
+				For i=0 To Len(args)-1	'evaluate arguments
+					args[i]=getinfo(String(args[i]))
+				Next
+			Else
+				mname$=bits[0]
+				args=Null
+			EndIf
+			m:TMethod=tt.findmethod(mname)
+			If m
+				'Print "  method"
+				Return m.invoke(o,args)
+			EndIf
 		EndIf
 	End Method
 	
@@ -161,9 +262,9 @@ Type HTTPSession
 		i=0
 		While i<Len(bits)
 			If i Mod 2
-				Print bits[i]
+				'Print bits[i]
 				If bits[i][0]=Asc("=")
-					render String(getinfo(Trim(bits[i][1..]),info))
+					render String(getinfo(Trim(bits[i][1..])))
 				Else
 					Local words$[]=bits[i].split(" ")
 					Select words[0]
@@ -171,13 +272,51 @@ Type HTTPSession
 						aka$=words[1]
 						obj$=words[3]
 						si=i
-						While bits[i]<>"endfor"
+						infors=1
+						While infors
 							i:+2
+							If Trim(bits[i]).split(" ")[0]="for" infors:+1
+							If bits[i]="endfor" infors:-1
 						Wend
-						For o:Object=EachIn iterate(getinfo(obj,info))
+						For o:Object=EachIn iterate(getinfo(obj))
 							info.insert aka,o
 							render_bits(bits[si+1..i])
 						Next
+					Case "if"
+						'Print "IF STATEMENT"
+						expr$=" ".join(words[1..])
+						'Print expr
+						words=expr.split("=")
+						si=i
+						ei=si
+						inifs=1
+						While inifs
+							i:+2
+							If Trim(bits[i]).split(" ")[0]="if" inifs:+1
+							If bits[i]="endif" inifs:-1
+							If bits[i]="else" ei=i
+						Wend
+						'Print si+","+ei+","+i
+						'Print String(getinfo(words[0]))
+						'Print String(getinfo(words[1]))
+						Select Len(words)
+						Case 1
+							success=getinfo(expr)<>Null
+						Case 2
+							success=getinfo(words[0]).compare(getinfo(words[1]))=0
+						End Select
+						If success
+							'Print "yes!"
+							If ei=si Then ei=i
+							render_bits(bits[si+1..ei])
+						ElseIf ei>si
+							'Print "else!"
+							render_bits(bits[ei+1..i])
+						Else
+							'Print "no"
+						EndIf
+					Case "include"
+						render_template " ".join(words[1..])
 					End Select
 				EndIf
 			Else
@@ -191,56 +330,14 @@ Type HTTPSession
 		res.status=err
 		render err
 	End Method
+	
+	Method redirect(dest$)
+		res.status="303 See other"
+		res.headers.insert "Location",dest
+	End Method
+	
+	Method set_cookie(name$,value$,path$="/")
+		res.cookies.addlast name+"="+value+"; path="+path
+	End Method
 End Type
 
-Function getinfo:Object(name$,content:tmap)
-	'Print "getinfo "+name
-	Local bits$[]=name.split(".")
-	If content.contains(bits[0])
-		o:Object=content.valueforkey(bits[0])
-		If Not o Return Null
-		'Print "object"
-		Return getproperty(o,bits[1..])
-	Else
-		Return Null
-	EndIf
-End Function
-
-
-Function getproperty:Object(o:Object,bits$[])
-	tt:TTypeId=TTypeId.ForObject(o)
-	'Print "  "+tt.name()+": "+".".join(bits)
-	If Not Len(bits)
-		Return o
-	EndIf
-	f:TField=tt.findfield(bits[0])
-	If f
-		Select f.typeid()
-		Case StringTypeId
-			'Print "  stringfield"
-			Return f.getstring(o)
-		Case IntTypeId
-			'Print "  intfield"
-			Return String(f.getint(o))
-		Case FloatTypeId
-			'Print "  floatfield"
-			Return String(f.getfloat(o))
-		Case DoubleTypeId
-			'Print "  doublefield"
-			Return String(f.getdouble(o))
-		Case LongTypeId
-			'Print "  longfield"
-			Return String(f.getlong(o))
-		Default
-			'Print "  objectfield"
-			o:Object=f.get(o)
-			Return getproperty(o,bits[1..])
-		End Select
-	Else
-		m:TMethod=tt.findmethod(bits[0])
-		If m
-			'Print "  method"
-			Return m.invoke(o)
-		EndIf
-	EndIf
-End Function
