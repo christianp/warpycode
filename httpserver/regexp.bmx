@@ -15,6 +15,9 @@ Type fsa
 	Field transitions:TList
 	Field name$
 	
+	Field startbracket,endbracket
+	Field digit
+	
 	Method New()
 		transitions=New TList
 	End Method
@@ -43,8 +46,8 @@ Type fsa
 		Return l
 	End Method
 	
-	Method evaluate$(pattern$,spaces$="")
-		rdebugo spaces+name+"?"+pattern
+	Method evaluate$(pattern$,spaces$="",bits:TList=Null)
+		rdebugo String(digit)+spaces+name+"?"+pattern
 		If Not pattern
 			rdebugo "end at "+name
 			If accepting
@@ -56,16 +59,27 @@ Type fsa
 		symbol$=Chr(pattern[0])
 		npattern$=pattern[1..]
 		For f:fsa=EachIn matches(symbol)
-			res$=f.evaluate(npattern,spaces+" ")
+			res$=f.evaluate(npattern,spaces+" ",bits)
 			If res
 				If res=~0 res=""
+				If bits
+					If f.digit
+						rdebugo spaces+"append "+symbol
+						If f.digit=digit
+							bits.addfirst symbol+String(bits.removefirst())
+						Else
+							rdebugo spaces+"start "+symbol
+							bits.addfirst ""
+						EndIf
+					EndIf
+				EndIf
 				Return symbol+res
 			EndIf
 		Next
 		For t:transition=EachIn transitions
 			If t.cs=emptyset
 				rdebugo spaces+"empty move to "+t.dest.name
-				res$=t.dest.evaluate(pattern,spaces)
+				res$=t.dest.evaluate(pattern,spaces,bits)
 				If res
 					If res=~0 res=""
 					Return res
@@ -98,7 +112,8 @@ Type fsa
 	
 	Method repr$()
 		txt$=name+"~n"
-		If accepting txt:+"accepting~n"
+		If accepting txt:+" accepting~n"
+		txt:+" digit "+digit+"~n"
 		For t:transition=EachIn transitions
 			txt:+"  "+t.repr()+"~n"
 		Next
@@ -172,7 +187,7 @@ Type fsa
 			Next
 			nf:fsa=New fsa
 			nf.name=ziplist(l)
-			'rdebugo "new node "+nf.name
+			rdebugo "new node "+nf.name
 			allnodes.insert l,nf
 			If adding
 				newnodes.addlast l
@@ -211,6 +226,9 @@ Type fsa
 			'for each old node in the list, work out the transitions
 			For f:fsa=EachIn l
 				If f.accepting nf.accepting=1
+				If f.startbracket nf.startbracket=1
+				If f.endbracket nf.endbracket=1
+				nf.digit=Max(f.digit,nf.digit)
 			
 				'get transition map for this nfsa node
 				fnt:tmap=tmap(maps.valueforkey(f))
@@ -266,8 +284,10 @@ End Type
 
 
 Global numnodes=0
-Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
-	rdebugo spaces+"compile: "+pattern
+Global numdigits=0
+Function compile:fsa[](pattern$,starts:fsa[],spaces$="",digit=0)
+	rdebugo spaces+"compile: "+pattern+" {"+digit+"}"
+	spaces:+digit
 	
 
 	Local bits$[]
@@ -277,6 +297,11 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 	'note that starts is not really a set of starting nodes for the whole machine,
 	'but in fact the previous set of finals.
 
+	For f:fsa=EachIn starts
+		If digit And Not f.digit
+			f.digit=digit
+		EndIf
+	Next
 	If Len(bits)=1
 		While Len(pattern)
 			ostarts=starts
@@ -286,6 +311,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 			Select symbol
 			Case "(" 'start brackets
 				rdebugo spaces+"brackets"
+				If Not digit numdigits:+1
 				inparens=1
 				i=1
 				While inparens
@@ -298,7 +324,14 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 					i:+1
 				Wend
 				bit$=pattern[1..i-1]
-				ends=compile(bit,starts,spaces+"  ")
+				For f:fsa=EachIn starts
+					f.startbracket=1
+				Next
+				ends=compile(bit,starts,spaces+"  ",numdigits)
+				'digit=0
+				For f:fsa=EachIn ends
+					f.endbracket=1
+				Next
 				pattern=pattern[i..]
 				
 			Case "["
@@ -317,7 +350,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				ends=[nf]
 			Case "\"
 				symbol=Chr(pattern[1])
-				rdebugo "special character "+symbol
+				rdebugo spaces+"special character "+symbol
 				Local cs:charset
 				Select symbol
 				Case "d" 'digit
@@ -331,7 +364,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				Default
 					cs=charset.Create(symbol)
 				End Select
-				rdebugo cs.repr()
+				'rdebugo spaces+cs.repr()
 				mf:fsa=New fsa
 				mf.name="m"
 				nf:fsa=New fsa
@@ -348,7 +381,7 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				nends=[nf]
 				pattern=pattern[2..]
 			Case "."
-				rdebugo "any character"
+				rdebugo spaces+"any character"
 				mf:fsa=New fsa
 				nf:fsa=New fsa
 				mf.name="m"
@@ -435,13 +468,19 @@ Function compile:fsa[](pattern$,starts:fsa[],spaces$="")
 				ends=nends
 			EndIf
 			starts=ends
+	For f:fsa=EachIn ends
+		If digit And Not f.digit
+			f.digit=digit
+		EndIf
+	Next
 		Wend
 	Else
 		rdebugo spaces+"pipes"
 		For bit$=EachIn bits
-			ends:+compile(bit,starts,spaces+"  ")
+			ends:+compile(bit,starts,spaces+"  ",digit)
 		Next
 	EndIf
+	
 	
 	Return ends
 End Function
@@ -487,7 +526,9 @@ End Function
 
 
 Rem
-re$="[a-zA-Z]+(\.[a-zA-Z]+)?"
+rdebugging=1
+re$="([a-zA-Z]+)(\.[a-zA-Z]+)?[0-9]"
+'re$="/([a-zA-Z]+)/([a-zA-Z]+)"
 start:fsa=fsa.Create(re)
 
 Print re
@@ -495,6 +536,10 @@ Print re
 in$=""
 While in<>"quit"
 	in$=Input(">")
-	Print "<"+start.evaluate(in)
+	a:TList=New TList
+	Print "<"+start.evaluate(in,"",a)
+	For bit$=EachIn a
+		Print bit
+	Next
 Wend
-endrem
+EndRem
