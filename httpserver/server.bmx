@@ -3,6 +3,8 @@
 Include "regexp.bmx"
 Include "list filter.bmx"
 Include "iterator.bmx"
+Include "serialise.bmx"
+Include "textile.bmx"
 
 Include "session.bmx"
 Include "routes.bmx"
@@ -125,6 +127,7 @@ Function ProcessConnection:Object (obj:Object)
 	incoming=c.ReadLine()
 	'Print ">>>"+incoming
 	Local bits$[]=incoming.split(" ")
+	If Len(bits)<>3 Return
 	s.req=New HTTPRequest.Create(bits[0],bits[1],bits[2])	
 
 	Repeat
@@ -176,7 +179,7 @@ Function ProcessConnection:Object (obj:Object)
 
 	If init
 		init s
-	endif
+	EndIf
 	s.Respond
 
 	KillConnection c

@@ -4,7 +4,7 @@ Global posts:TList=New TList
 Global numposts
 Type post
 	Field id
-	Field title$,content$
+	Field title$,content$,contentsrc$
 	Field author:user
 	
 	Method New()
@@ -18,6 +18,7 @@ Type post
 		p.author=author
 		p.title=title
 		p.setcontent content
+		savedb
 		Return p
 	End Function
 
@@ -30,7 +31,6 @@ Type post
 	Function add(s:httpsession)
 		Select s.req.meth
 		Case "get"
-			s.render_template "post/add"
 		Case "post"
 			author:user=user(s.getinfo("you"))
 			title$=s.req.getdata("title")
@@ -46,10 +46,10 @@ Type post
 		Select s.req.meth
 		Case "get"
 			s.info.insert "post",p
-			s.render_template "post/edit"
 		Case "post"
 			p.title=s.req.getdata("title")
 			p.setcontent s.req.getdata("content")
+			savedb
 			s.redirect "/post/view/"+p.id		
 		End Select
 	End Function
@@ -65,7 +65,6 @@ Type post
 	
 	Function list(s:httpsession)
 		s.info.insert "posts",posts
-		s.render_template "post/list"
 	End Function
 	
 	Function view(s:httpsession)
@@ -74,7 +73,6 @@ Type post
 		s.info.insert "p",p
 		mycomments:tquery=filter(comments,"owner=p",s)
 		s.info.insert "comments",mycomments
-		s.render_template "post/view"
 	End Function
 	
 	Function addcomment(s:httpsession)
@@ -83,19 +81,37 @@ Type post
 		author:user=user(s.getinfo("you"))
 		txt$=s.req.getdata("txt")
 		comment.Create p,author,txt
-		view s
+		s.redirect "/post/view/"+p.id
 	End Function
 	
 	Method summary$()
-		If Len(content)>50
-			Return content[..47]+"..."
+		Function striptags$(in$)
+			c=0
+			oc=0
+			out$=""
+			While c<Len(in)
+				If in[c]=Asc("<")
+					out:+in[oc..c]
+					While c<Len(in) And in[c]<>Asc(">")
+						c:+1
+					Wend
+					oc=c+1
+				EndIf
+				c:+1
+			Wend
+			Return out
+		End Function
+		sum$=striptags(content)
+		If Len(sum)>50
+			Return sum[..47]+"..."
 		Else
-			Return content
+			Return sum
 		EndIf
 	End Method
 	
 	Method setcontent(c$)
-		content=nl2br(c)
+		contentsrc=c
+		content=textile(c)
 	End Method
 End Type
 
@@ -117,13 +133,14 @@ Type comment
 		For c:comment=EachIn comments
 			If c.id=id Return c
 		Next
-	End function
+	End Function
 	
 	Function Create:comment(p:post,author:user,txt$)
 		c:comment=New comment
 		c.owner=p
 		c.author=author
 		c.txt=txt
+		savedb
 		Return c
 	End Function
 	
@@ -139,6 +156,7 @@ Global users:TList=New TList
 Global numusers
 Type user
 	Field id
+	Field auth
 	Field name$
 	
 	Method New()
@@ -147,16 +165,17 @@ Type user
 		users.addlast Self
 	End Method
 	
+	Function Create:user(name$)
+		u:user=New user
+		u.name=name
+		savedb
+		Return u
+	End Function
+	
 	Function find:user(id$)
 		For u:user=EachIn users
 			If u.id=Int(id) Or Lower(u.name)=Lower(id) Return u
 		Next
-	End Function
-	
-	Function Create:user(name$)
-		u:user=New user
-		u.name=name
-		Return u
 	End Function
 	
 	
@@ -164,24 +183,30 @@ Type user
 		name$=s.req.getdata("name")
 		u:user=user.find(name)
 		If Not u u=user.Create(name)
+		u.auth=Rand(1000000)
+		savedb
 		s.set_cookie "userid",u.id
-		s.redirect "/"
+		s.set_cookie "userauth",u.auth
+		s.redirect s.req.header("referer")
 	End Function
 	
 	Function logout(s:httpsession)
 		s.set_cookie "userid","0"
-		s.redirect "/"
+		s.redirect s.req.header("referer")
 	End Function
 	
 	Function view(s:httpsession)
 		id$=s.label("object")
 		u:user=user.find(id)
-		s.info.insert "user",u
-		uposts:tquery=filter(posts,"author=user",s)
-		ucomments:tquery=filter(comments,"author=user",s)
-		s.info.insert "posts",uposts
-		s.info.insert "comments",ucomments
-		s.render_template "user/view"
+		If u
+			s.info.insert "user",u
+			uposts:tquery=filter(posts,"author=user",s)
+			ucomments:tquery=filter(comments,"author=user",s)
+			s.info.insert "posts",uposts
+			s.info.insert "comments",ucomments
+		Else
+			s.render_error "404 No such user"
+		EndIf
 	End Function
 	
 End Type
@@ -190,13 +215,54 @@ End Type
 Function init(s:httpsession)
 	If s.req.cookies.contains("userid")
 		u:user=user.find(s.req.cookie("userid"))
-		s.info.insert "you",u
+		If u
+			Print u.auth
+			Print s.req.cookie("userauth")
+		EndIf
+		If u And u.auth=Int(s.req.cookie("userauth"))
+			s.info.insert "you",u
+			Print "ARR"
+		EndIf
 	EndIf
+	s.info.insert "users",users
 End Function
 
-u:user=user.Create("Shakespeare")
-p:post=post.Create(u,"Hello","This is the first <b>post</b>. It is a long post about things.")
-comment.Create p,u,"First!"
+Function savedb()
+	'Print "SAVE"
+	ja:jsonarray=New jsonarray
+	serialised:tmap=New tmap
+	Local txt$
+	For p:post=EachIn posts
+		For jv:jsonvalue=EachIn jsonise(p,serialised)
+			txt:+jv.repr()+"~n"
+		Next
+	Next
+	For u:user=EachIn users
+		For jv:jsonvalue=EachIn jsonise(u,serialised)
+			txt:+jv.repr()+"~n"
+		Next
+	Next		
+	For c:comment=EachIn comments
+		For jv:jsonvalue=EachIn jsonise(c,serialised)
+			txt:+jv.repr()+"~n"
+		Next
+	Next
+	f:TStream=WriteFile("db/db.txt")
+	f.WriteString txt
+	CloseFile f
+End Function
+
+Function loaddb()
+	f:TStream=ReadFile("db/db.txt")
+	txt$=f.ReadString(f.size())
+	unjsonise txt
+End Function
+
+SeedRnd MilliSecs()
+loaddb
+'u:user=user.Create("Shakespeare")
+'p:post=post.Create(u,"Hello","This is the first <b>post</b>. It is a long post about things.")
+'comment.Create p,u,"First!"
 
 route.Create("/",["controller => post","action => list"])
 

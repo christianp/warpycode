@@ -4,7 +4,7 @@ Function maketemplates(fname$="")
 	If fname And fname[fname.length-1]<>Asc("/")
 		fname:+"/"
 	EndIf
-	dirname$="templates/"+fname
+	dirname$="views/"+fname
 	dir=ReadDir(dirname)
 	
 	If Not dir RuntimeError "failed to read current directory"

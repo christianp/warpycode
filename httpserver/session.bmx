@@ -75,7 +75,7 @@ Type HTTPResponse
 		Next
 
 		out:+"~n"+body		
-		Print out
+		'Print out
 		Return out
 	End Method
 End Type
@@ -86,12 +86,15 @@ Type HTTPSession
 	Field res:HTTPResponse
 	Field labels:tmap
 	Field info:tmap
+	Field rendered
+	Field content:tmap
 	
 	Method New()
 		res=New HTTPResponse
 		labels=New tmap
 		info=New tmap
 		info.insert "session",Self
+		content=New tmap
 	End Method
 	
 	Function Create:HTTPSession(c:connection)
@@ -108,22 +111,24 @@ Type HTTPSession
 		Print "body: "+req.body
 		
 		
+
+		If Len(req.path)>1 And req.path[Len(req.path)-1]=Asc("/") req.path=req.path[..Len(req.path)-1]
+		labels=route.find(req.path)
+		controller$=label("controller")
+		action$=label("action")
+
 		If req.http$ <> "HTTP/1.1"
 			render_error "505 This server only accepts HTTP version 1.1"
 		Else
-			If Len(req.path)>1 And req.path[Len(req.path)-1]=Asc("/") req.path=req.path[..Len(req.path)-1]
-			labels=route.find(req.path)
 			If Not labels
 				render_error "404 No route matched ("+req.path+")"
 			Else
-				controller$=label("controller")
 				If Not controller
 					render_error "404 Route did not define a controller"
 				Else
 					'Print controller
 					tt:TTypeId=TTypeId.ForName(controller)
 					If tt
-						action$=label("action")
 						If Not action
 							render_error "404 Route did not give an action"
 						Else
@@ -140,6 +145,15 @@ Type HTTPSession
 				EndIf
 			EndIf
 		EndIf
+		
+		
+		If Not rendered 'didn't render a different template, use one corresponding to this controller/action
+			render controller+"/"+action
+		EndIf
+		
+		apply_layout controller
+		
+		
 		'Print "finished"
 		Print "~n"
 		
@@ -169,9 +183,6 @@ Type HTTPSession
 		l:TList=New TList
 		If stringre.evaluate(name,"",l)	'string literal
 			'Print "MATCH STRING"
-			For b$=EachIn l
-				Print b
-			Next
 			Return l.removelast()
 		EndIf
 		l:TList=New TList
@@ -224,9 +235,9 @@ Type HTTPSession
 			Local mname$
 			If args
 				'Print "function with arguments!"
-				For arg$=EachIn args
-					Print arg
-				Next
+				'For arg$=EachIn args
+					'Print arg
+				'Next
 				mname$=String(args[0])
 				args=args[1..]
 				For i=0 To Len(args)-1	'evaluate arguments
@@ -244,27 +255,50 @@ Type HTTPSession
 		EndIf
 	End Method
 	
-	Method render(txt$)
-		res.body:+txt
+	Method addtext(txt$,cname$)
+		If cname
+			txt=getcontent(cname)+txt
+			content.insert cname,txt
+		Else
+			res.body:+txt
+		EndIf
 	End Method
 	
-	Method render_template(name$)
+	Method getcontent$(cname$)
+		If content.contains(cname)
+			Return String(content.valueforkey(cname))
+		EndIf
+	End Method
+	
+	Method apply_layout(name$)
+		Local layout$
+		If templates.contains("layouts/"+name)
+			layout="layouts/"+name
+		Else
+			layout="layouts/application"
+		EndIf
+		render layout,""
+	End Method
+	
+	Method render(name$,cname$="main")
+		rendered=1
+		
 		Local bits$[]
 		If Not templates.contains(name)
-			render "Can't find template "+name
+			addtext "Can't find template "+name,cname
 			Return
 		EndIf
 		bits=String[](templates.valueforkey(name))
-		render_bits bits
+		render_bits bits,cname
 	End Method
 	
-	Method render_bits(bits$[])
+	Method render_bits(bits$[],cname$="main")
 		i=0
 		While i<Len(bits)
 			If i Mod 2
 				'Print bits[i]
 				If bits[i][0]=Asc("=")
-					render String(getinfo(Trim(bits[i][1..])))
+					addtext String(getinfo(Trim(bits[i][1..]))),cname
 				Else
 					Local words$[]=bits[i].split(" ")
 					Select words[0]
@@ -280,7 +314,7 @@ Type HTTPSession
 						Wend
 						For o:Object=EachIn iterate(getinfo(obj))
 							info.insert aka,o
-							render_bits(bits[si+1..i])
+							render_bits(bits[si+1..i],cname)
 						Next
 					Case "if"
 						'Print "IF STATEMENT"
@@ -308,19 +342,33 @@ Type HTTPSession
 						If success
 							'Print "yes!"
 							If ei=si Then ei=i
-							render_bits(bits[si+1..ei])
+							render_bits(bits[si+1..ei],cname)
 						ElseIf ei>si
 							'Print "else!"
-							render_bits(bits[ei+1..i])
+							render_bits(bits[ei+1..i],cname)
 						Else
 							'Print "no"
 						EndIf
 					Case "include"
-						render_template " ".join(words[1..])
+						render " ".join(words[1..]),cname
+					Case "content_for"
+						cname2$=Trim(words[1])
+						si=i
+						While bits[i]<>"end_content"
+							i:+2
+						Wend
+						render_bits bits[si+1..i],cname2
+					Case "yield"
+						If Len(words)=1
+							cname2$="main"
+						Else
+							cname2=words[1]
+						EndIf
+						addtext getcontent(cname2),cname
 					End Select
 				EndIf
 			Else
-				render bits[i]
+				addtext bits[i],cname
 			EndIf
 			i:+1
 		Wend
@@ -328,12 +376,14 @@ Type HTTPSession
 	
 	Method render_error(err$)
 		res.status=err
-		render err
+		addtext err,"main"
+		rendered=1
 	End Method
 	
 	Method redirect(dest$)
 		res.status="303 See other"
 		res.headers.insert "Location",dest
+		rendered=1
 	End Method
 	
 	Method set_cookie(name$,value$,path$="/")
