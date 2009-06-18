@@ -92,101 +92,7 @@ EndRem
 ' Threaded file serve function...
 ' -----------------------------------------------------------------------------
 
-Function ProcessConnection:Object (obj:Object)
 
-	Local c:Connection = New Connection
-	c.socket = TSocket (obj)
-	
-	If SocketConnected (c.socket)
-
-		Print "~nRequest from " + DottedIP (SocketRemoteIP (c.socket))
-		
-		c.stream = CreateSocketStream (c.socket)
-
-	Else
-		
-		Print "ERROR: No stream created from socket!"
-		
-		' No stream was created -- this can happen!
-
-		KillConnection c
-		
-		Return Null
-
-	EndIf
-	
-	Local eoc:Int
-	Local eop:Int
-
-	Local s:HTTPSession=HTTPSession.Create(c)
-	
-	Local incoming:String
-	Local command:String
-	Local parameter:String
-	
-	incoming=c.ReadLine()
-	'Print ">>>"+incoming
-	Local bits$[]=incoming.split(" ")
-	If Len(bits)<>3 Return
-	s.req=New HTTPRequest.Create(bits[0],bits[1],bits[2])	
-
-	Repeat
-	
-		If SocketConnected (c.socket)
-		
-			incoming = c.ReadLine()
-			
-		Else
-		
-			KillConnection c
-			
-			Return Null
-			
-		EndIf
-
-		If incoming <> ""
-
-			eoc = incoming.find(":")		' End of command part of incoming
-			command = Lower (incoming[..eoc])		' Command part of incoming
-			parameter = Trim(incoming[eoc+2..])	' Parameter part of incoming
-			s.req.headers.insert command,parameter
-		EndIf
-			
-
-	Until incoming = "" ' Got blank line after headers, so all done here...
-
-
-	If s.req.headers.contains("cookie")
-		cookie$=s.req.header("cookie")
-		Local cookies$[]=cookie.split(";")
-		For cookie=EachIn cookies
-			bits=Trim(cookie).split("=")
-			s.req.cookies.insert bits[0],"=".join(bits[1..])
-		Next
-	EndIf
-
-	Print ""
-	Local size=Int(s.req.header("content-length"))
-	Print "body size: "+size
-	s.req.body=c.stream.ReadString(size)
-	If s.req.header("content-type")="application/x-www-form-urlencoded"
-		bits=s.req.body.split("&")
-		For bit$=EachIn bits
-			Local i=bit.find("=")
-			s.req.data.insert Trim(Lower(bit[..i])),unhexurl(Replace(bit[i+1..],"+"," "))
-		Next
-	EndIf
-
-	If init
-		init s
-	EndIf
-	s.Respond
-
-	KillConnection c
-	
-	Return Null
-	
-End Function
 
 
 
@@ -337,6 +243,98 @@ Type tserver
 		EndRem
 		
 		CloseSocket socket
+	End Method
+	
+	Method ProcessConnection:Object (obj:Object)
+	
+		Local c:Connection = New Connection
+		c.socket = TSocket (obj)
+		
+		If SocketConnected (c.socket)
+	
+			Print "~nRequest from " + DottedIP (SocketRemoteIP (c.socket))
+			
+			c.stream = CreateSocketStream (c.socket)
+	
+		Else
+			
+			Print "ERROR: No stream created from socket!"
+			
+			' No stream was created -- this can happen!
+	
+			KillConnection c
+			
+			Return Null
+	
+		EndIf
+		
+		Local eoc:Int
+		Local eop:Int
+	
+		Local s:HTTPSession=HTTPSession.Create(c)
+		
+		Local incoming:String
+		Local command:String
+		Local parameter:String
+		
+		incoming=c.ReadLine()
+		'Print ">>>"+incoming
+		Local bits$[]=incoming.split(" ")
+		If Len(bits)<>3 Return
+		s.req=New HTTPRequest.Create(bits[0],bits[1],bits[2])	
+	
+		Repeat
+		
+			If SocketConnected (c.socket)
+			
+				incoming = c.ReadLine()
+				
+			Else
+			
+				KillConnection c
+				
+				Return Null
+				
+			EndIf
+	
+			If incoming <> ""
+	
+				eoc = incoming.find(":")		' End of command part of incoming
+				command = Lower (incoming[..eoc])		' Command part of incoming
+				parameter = Trim(incoming[eoc+2..])	' Parameter part of incoming
+				s.req.headers.insert command,parameter
+			EndIf
+				
+	
+		Until incoming = "" ' Got blank line after headers, so all done here...
+	
+	
+		If s.req.headers.contains("cookie")
+			cookie$=s.req.header("cookie")
+			Local cookies$[]=cookie.split(";")
+			For cookie=EachIn cookies
+				bits=Trim(cookie).split("=")
+				s.req.cookies.insert bits[0],"=".join(bits[1..])
+			Next
+		EndIf
+	
+		Print ""
+		Local size=Int(s.req.header("content-length"))
+		Print "body size: "+size
+		s.req.body=c.stream.ReadString(size)
+		If s.req.header("content-type")="application/x-www-form-urlencoded"
+			s.req.adddata s.req.body
+		EndIf
+	
+		If init
+			init s
+		EndIf
+		s.Respond
+	
+		KillConnection c
+		
+		Return Null
+		
 	End Method
 	
 End Type

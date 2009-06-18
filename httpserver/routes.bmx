@@ -69,7 +69,7 @@ Type route
 		For bit$=EachIn l
 			If bit
 				If i<Len(names) And names[i]
-					labels.insert names[i],bit
+					labels.insert names[i],unhexurl(bit)
 					'Print names[i]+": "+bit
 				EndIf
 				i:+1

@@ -504,25 +504,31 @@ Function jsonise:TList(o:Object,serialised:tmap=Null)
 		jo.addnewpair "type",tt.name()
 		jo.addnewpair "key",key
 		If tt.name()[tt.name().length-2..]="[]"	'array
-			jo.addnewpair "length",String(tt.arraylength(o))
-			ia:jsonarray=New jsonarray
-			For i=0 To tt.arraylength(o)-1
-				o2:Object=tt.getarrayelement(o,i)
-				If o2
-					If String(o2)
-						key$="string:"+String(o2)
+			If tt.name()[..tt.name().length-2]="Null"	'need to deal with uninitialised arrays
+				jo.addnewpair "length","0"
+				jo.addnewpair "items",New jsonarray
+			Else
+				jo.addnewpair "length",String(tt.arraylength(o))
+				ia:jsonarray=New jsonarray
+				For i=0 To tt.arraylength(o)-1
+					o2:Object=tt.getarrayelement(o,i)
+					If o2
+						Select TTypeId.ForObject(o2)
+						Case StringTypeId,IntTypeId,DoubleTypeId,FloatTypeId,IntTypeId
+							key$="string:"+String(o2)
+						Default
+							For jv:jsonvalue=EachIn jsonise(o2,serialised)
+								l.addlast jv
+							Next
+							key$="object:"+String(serialised.valueforkey(o2))
+						Endselect
 					Else
-						For jv:jsonvalue=EachIn jsonise(o2,serialised)
-							l.addlast jv
-						Next
-						key$="object:"+String(serialised.valueforkey(o2))
+						key="null"
 					EndIf
-				Else
-					key="null"
-				EndIf
-				ia.addlast key
-			Next
-			jo.addnewpair "items",ia
+					ia.addlast key
+				Next
+				jo.addnewpair "items",ia
+			EndIf
 		Else	'object
 			fo:jsonobject=New jsonobject
 			jo.addnewpair "fields",fo
@@ -563,11 +569,13 @@ Function unjsonise:TList(data$)
 	'create objects first so we can fulfil references
 	For jo:jsonobject=EachIn jd.things
 		tname$=jo.getstringvalue("type")
-		Print tname
+		'Print tname
 		If tname[tname.length-2..]="[]"	'array
 			tt:TTypeId=TTypeId.ForName(tname)
 			length=Int(jo.getstringvalue("length"))
-			o:Object=tt.newarray(length)
+			If tt
+				o:Object=tt.newarray(length)
+			EndIf
 		Else	'object
 			tt:TTypeId=TTypeId.ForName(tname$)
 			o:Object=tt.newobject()

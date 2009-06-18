@@ -20,6 +20,11 @@ Type HTTPRequest
 	Method Create:HTTPRequest(_meth$,_path$,_http$)
 		meth=Lower(_meth)
 		path=_path
+		If path.contains("?")
+			i=path.find("?")
+			adddata path[i+1..]
+			path=path[..i]
+		EndIf
 		pathbits=path.split("/")
 		http=_http
 		Return Self
@@ -35,6 +40,14 @@ Type HTTPRequest
 		If headers.contains(name)
 			Return String(headers.valueforkey(Lower(name)))
 		EndIf
+	End Method
+	
+	Method adddata(d$)
+		Local bits$[]=d.split("&")
+		For bit$=EachIn bits
+			Local i=bit.find("=")
+			data.insert Trim(Lower(bit[..i])),unhexurl(Replace(bit[i+1..],"+"," "))
+		Next
 	End Method
 	
 	Method getdata$(name$)
@@ -146,12 +159,18 @@ Type HTTPSession
 			EndIf
 		EndIf
 		
-		
 		If Not rendered 'didn't render a different template, use one corresponding to this controller/action
-			render controller+"/"+action
+			labels.insert "layout",controller
+			tname$=controller+"/"+action
+			If templates.contains(tname)
+				render tname$
+			EndIf
 		EndIf
 		
-		apply_layout controller
+		layout$=String(label("layout"))
+		If layout
+			apply_layout layout
+		EndIf
 		
 		
 		'Print "finished"
@@ -207,6 +226,9 @@ Type HTTPSession
 		If Not Len(bits)
 			Return o
 		EndIf
+		If tt.name().endswith("[]") And bits[0]="length"
+			Return String(tt.arraylength(o))
+		EndIf
 		f:TField=tt.findfield(bits[0])
 		If f
 			Select f.typeid()
@@ -255,7 +277,7 @@ Type HTTPSession
 		EndIf
 	End Method
 	
-	Method addtext(txt$,cname$)
+	Method addtext(txt$,cname$="")
 		If cname
 			txt=getcontent(cname)+txt
 			content.insert cname,txt
@@ -274,7 +296,7 @@ Type HTTPSession
 		Local layout$
 		If templates.contains("layouts/"+name)
 			layout="layouts/"+name
-		Else
+		ElseIf templates.contains("layouts/application")
 			layout="layouts/application"
 		EndIf
 		render layout,""
@@ -312,10 +334,15 @@ Type HTTPSession
 							If Trim(bits[i]).split(" ")[0]="for" infors:+1
 							If bits[i]="endfor" infors:-1
 						Wend
-						For o:Object=EachIn iterate(getinfo(obj))
-							info.insert aka,o
-							render_bits(bits[si+1..i],cname)
-						Next
+						iterable:Object=getinfo(obj)
+						If iterable
+							For o:Object=EachIn iterate(iterable)
+								info.insert aka,o
+								render_bits(bits[si+1..i],cname)
+							Next
+						Else
+							addtext "!! couldn't find iterable "+obj+" !!",cname
+						EndIf
 					Case "if"
 						'Print "IF STATEMENT"
 						expr$=" ".join(words[1..])
@@ -335,10 +362,12 @@ Type HTTPSession
 						'Print String(getinfo(words[1]))
 						Select Len(words)
 						Case 1
-							success=getinfo(expr)<>Null
+							exprobj:Object=getinfo(expr)
+							success="".compare(exprobj)<>0
 						Case 2
-							success=getinfo(words[0]).compare(getinfo(words[1]))=0
+							success= (getinfo(words[0]).compare(getinfo(words[1]))=0)
 						End Select
+						'Print success
 						If success
 							'Print "yes!"
 							If ei=si Then ei=i
@@ -365,6 +394,17 @@ Type HTTPSession
 							cname2=words[1]
 						EndIf
 						addtext getcontent(cname2),cname
+					Case "link_to"
+						obj$=words[1]
+						o:Object=getinfo(obj)
+						tt:TTypeId=TTypeId.ForObject(o)
+						If tt.findfunction("view") And tt.findfield("id")
+							tname$=Lower(tt.name())
+							href$="/"+tname+"/view/"+tt.findfield("id").getint(o)
+						Else
+							href$=obj
+						EndIf
+						addtext("<a href=~q"+href+"~q>"+String(getinfo(" ".join(words[2..])))+"</a>",cname)
 					End Select
 				EndIf
 			Else
@@ -378,6 +418,7 @@ Type HTTPSession
 		res.status=err
 		addtext err,"main"
 		rendered=1
+		labels.insert "layout",""
 	End Method
 	
 	Method redirect(dest$)
