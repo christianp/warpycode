@@ -1,47 +1,3 @@
-Global towns:TList=New TList
-Type town
-	Field name$
-	Field x#,y#
-	Field pop
-	Field lastvisit
-	
-	Field roads:TList
-	
-	Method New()
-		name=prefixes[Rand(0,Len(prefixes)-1)]+suffixes[Rand(0,Len(suffixes)-1)]
-		name=Upper(name[..1])+name[1..]
-		roads=New TList
-		pop=Rnd(1,10)*1000
-		lastvisit=MilliSecs()
-		towns.addlast Self
-	End Method
-	
-	Function Create:town(x#,y#)
-		t:town=New town
-		t.x=x
-		t.y=y
-		Return t
-	End Function
-	
-	Function link(t1:town,t2:town)
-		If Not t1.roads.contains(t2)
-			t1.roads.addlast t2
-		EndIf
-		If Not t2.roads.contains(t1)
-			t2.roads.addlast t1
-		EndIf
-	End Function
-	
-	Method draw()
-		DrawOval x-2,y-2,5,5
-		
-		For t:town=EachIn roads
-			DrawLine x,y,t.x,t.y
-		Next
-		DrawLabel name+" ("+pop+")",x,y
-	End Method
-End Type
-
 Global labels:TList=New TList
 Type label
 	Field x#,y#
@@ -68,7 +24,7 @@ Function drawlabel(txt$,x,y)
 End Function
 
 'load place name bits
-Global prefixes$[],suffixes$[]
+Global prefixes$[],suffixes$[],forenames$[],surnames$[]
 For bit$=EachIn LoadText("prefix.txt").split("~n")
 	If bit
 		prefixes:+[bit]
@@ -85,7 +41,16 @@ For bit$=EachIn LoadText("any.txt").split("~n")
 		suffixes:+[bit]
 	EndIf
 Next
-
+'For bit$=EachIn LoadText("surname.txt").split("~n")
+'	If bit
+'		surnames:+[bit]
+'	EndIf
+'Next
+'For bit$=EachIn LoadText("forename.txt").split("~n")
+'	If bit
+'		forenames:+[bit]
+'	EndIf
+'Next
 
 Global points:TList=New TList
 Type point
@@ -242,6 +207,7 @@ End Type
 
 Graphics 600,600,0
 SeedRnd MilliSecs()
+SetBlend ALPHABLEND
 
 net:network=network.generate(300,300,250,4)
 
