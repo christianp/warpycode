@@ -43,23 +43,18 @@ Type letter
 		EndIf
 	End Method
 	
-	Method drop(avoidbag:postbag = Null)
+	Method drop()
 		bags:TList = New TList
 		bags.addlast bag
 		For l:letter = EachIn letters
-			If l <> Self And l.bag<>avoidbag
-				'dx# = l.x - x
-				'dy# = l.y - y
-				'd# = Sqr(dx * dx + dy * dy)
+			If l <> Self
 				If overlap(l)
-				'If d < l.size + size
 					If Not bags.contains(l.bag)
 						bags.addlast l.bag
 					EndIf
 				EndIf
 			EndIf
 		Next
-		'Print "bags: "+bags.count()
 		
 		check:TList = New TList
 		For b:postbag = EachIn bags
@@ -67,17 +62,12 @@ Type letter
 				check.addlast l
 			Next
 		Next
-		'Print "check: "+check.count()
 		
 		For l:letter = EachIn check
 			close:letter=Null
 			For l2:letter = EachIn letters
 				If l2 <> l
-					'dx# = l2.x - l.x
-					'dy# = l2.y - l.y
-					'd# = Sqr(dx * dx + dy * dy)
 					If l.overlap(l2)
-					'If d < l.size + l2.size
 						close = l2
 						Exit
 					EndIf
@@ -138,8 +128,10 @@ Type postbag Extends TList
 End Type
 
 Global labels:TList=New TList
-Type label
+Type tlabel
 	Field x#,y#
+	Field nx#,ny#,ox#,oy#
+	Field w#,h#
 	Field txt$
 	
 	Method New()
@@ -148,17 +140,92 @@ Type label
 	
 	Method draw()
 		GetColor r,g,b
-		SetColor 0,0,0
-		DrawRect x,y,TextWidth(txt),TextHeight(txt)
+		SetColor 100,0,0
+		DrawRect x,y,w,h
 		SetColor r,g,b
 		DrawText txt,x,y
 	End Method
+	
+	Function arrange()
+		move=1
+		c=0
+		While move And c<20
+			c:+1
+		'For c=1 To 10
+			move=0
+			For l:tlabel=EachIn labels
+				'l.x:+(l.ox-l.x)*.5
+				'l.y:+(l.oy-l.y)*.5
+				l.nx=0
+				l.ny=0
+			Next
+			For l:tlabel=EachIn labels
+				dx#=Min(600-l.w,Max(0,l.x))
+				dy#=Min(600-l.h,Max(0,l.y))
+				l.nx:+dx-l.x
+				l.ny:+dy-l.y
+				For l2:tlabel=EachIn labels
+					If l<>l2 And l2.x<l.x+l.w And l2.x+l2.w>l.x And l2.y<l.y+l.h And l2.y+l2.h>l.y
+						move:+1
+						dx#=(l2.x+l2.w/2)-(l.x+l.w/2)
+						dx=Sgn(dx)*(Abs(dx)-(l.w+l2.w)/2)
+						dy#=(l2.y+l2.h/2)-(l.y+l.h/2)
+						dy=Sgn(dy)*(Abs(dy)-(l.h+l2.h)/2)
+						'l2.nx:+dx/2
+						l.nx:+dx/2
+						'l2.ny:+dy/2
+						l.ny:+dy/2
+						
+						Rem
+						DrawLine 0,0,l.x,l.y
+						move:+1
+						Local moves#[]=[l2.x+l2.w-l.x, l2.y+l2.h-l.y, l.x+l.w-l2.x, l.y+l.h-l2.y]
+						big=0
+						For i=1 To 3
+							If Abs(moves[i])<Abs(moves[big]) big=i
+						Next
+						'l.txt=big+l.txt
+						Select big
+						Case 0
+							l2.nx:-moves[0]*.3
+							'l.nx:+moves[0]*.3
+						Case 1
+							l2.ny:-moves[1]*.3
+							'l.ny:+moves[1]*.3
+						Case 2
+							l2.nx:+moves[2]*.3
+							'l.nx:-moves[2]*.3
+						Case 3
+							l2.ny:+moves[3]*.3
+							'l.ny:-moves[3]*.3
+						End Select
+						EndRem
+					EndIf
+				Next
+			Next
+			For l:tlabel=EachIn labels
+				l.x:+l.nx
+				l.y:+l.ny
+			Next
+		Wend
+		'Next
+		
+		For l:tlabel=EachIn labels
+			l.draw
+		Next
+		
+		labels=New TList
+	End Function
 End Type
 
-Function drawlabel(txt$,x,y)
-	l:label=New label
+Function label(txt$,x,y)
+	l:tlabel=New tlabel
 	l.x=x
 	l.y=y
+	l.ox=x
+	l.oy=y
+	l.w=TextWidth(txt)
+	l.h=TextHeight(txt)
 	l.txt=txt
 End Function
 
@@ -185,16 +252,16 @@ For bit$=EachIn LoadText("streetname.txt").split("~n")
 		streetnames:+[bit]
 	EndIf
 Next
-'For bit$=EachIn LoadText("surname.txt").split("~n")
-'	If bit
-'		surnames:+[bit]
-'	EndIf
-'Next
-'For bit$=EachIn LoadText("forename.txt").split("~n")
-'	If bit
-'		forenames:+[bit]
-'	EndIf
-'Next
+For bit$=EachIn LoadText("surname.txt").split("~n")
+	If bit
+		surnames:+[bit]
+	EndIf
+Next
+For bit$=EachIn LoadText("forename.txt").split("~n")
+	If bit
+		forenames:+[bit]
+	EndIf
+Next
 
 Global points:TList=New TList
 Type point
@@ -203,6 +270,9 @@ Type point
 	Field net:network
 	Field links:TList
 	Field pop
+	Field mailbox:TList
+	
+	'pathfinding
 	Field d#,pred:point
 	
 	Function generate(points:TList,x#,y#,r#,depth)
@@ -225,7 +295,8 @@ Type point
 		net=New network
 		net.addlast Self
 		links=New TList
-		streetname=streetnames[Rand(0,Len(streetnames)-1)]
+		'streetname=streetnames[Rand(0,Len(streetnames)-1)]
+		mailbox=New TList
 	End Method
 	
 	Method link(p2:point)
@@ -277,6 +348,31 @@ Type point
 			p2=p2.pred
 		Wend
 		Return r
+	End Method
+	
+	Method makeletter()
+		p:point=Self
+		While p=Self Or Rand(5)>1
+			i=Rand(1,p.links.count())-1
+			p=point(p.links.valueatindex(i))
+		Wend
+
+		name$=forenames[Rand(0,Len(forenames)-1)]+" "+surnames[Rand(0,Len(surnames)-1)]
+		Local address$[]=[name,p.streetname,p.townname]
+		For line$=EachIn address
+			Print line
+		Next
+		Print "FROM: "+streetname+", "+townname
+		l:letter=letter.Create(Rand(0,450),Rand(300,500),address)
+		mailbox.addlast l
+	End Method
+	
+	Method update(delta#)
+		prob#=delta*pop*.0002
+		'label poisson(prob),x,y
+		For c=1 To poisson(prob)
+			makeletter
+		Next
 	End Method
 	
 	Method draw()
@@ -356,22 +452,32 @@ Type network Extends TList
 			p1:point = point(o1)
 			p2:point = point(o2)
 			Return p1.links.count() - p2.links.count()
-		End function
+		End Function
 		points.sort True,linksort
 		While points.count()
 			p:point=point(points.removefirst())
 			p.townname$ = prefixes[Rand(0 , Len(prefixes) - 1)] + suffixes[Rand(0 , Len(suffixes) - 1)]
 			p.townname=Upper(p.townname[..1])+Lower(p.townname[1..])
-			For p2:point = EachIn points.copy()
-				dx# = p2.x - p.x
-				dy# = p2.y - p.y
-				d# = dx * dx + dy * dy
-				If d < 10000
-					p2.townname = p.townname
-					points.remove p2
-				endif
-			Next
-		wend
+			checko:TList=New TList
+			checko.addlast p
+			Local pstreetnames$[]=streetnames[..]
+			While checko.count()
+				p:point=point(checko.removefirst())
+				i=Rand(0,Len(pstreetnames)-1)
+				p.streetname=pstreetnames[i]
+				pstreetnames=pstreetnames[..i]+pstreetnames[i+1..]
+				For p2:point = EachIn points.copy()
+					dx# = p2.x - p.x
+					dy# = p2.y - p.y
+					d# = Sqr(dx * dx + dy * dy)
+					If d < 50
+						p2.townname = p.townname
+						points.remove p2
+						checko.addlast p2
+					EndIf
+				Next
+			Wend
+		Wend
 		
 		Return root.net
 		
@@ -397,8 +503,13 @@ Type network Extends TList
 			EndIf
 		Next
 		Return close
-	End method
+	End Method
 
+	Method update(delta#)
+		For p:point=EachIn Self
+			p.update delta
+		Next
+	End Method
 	
 	Method draw()
 		For p:point = EachIn Self
@@ -433,34 +544,123 @@ net:network=network.generate(300,300,250,4)
 
 ms = MilliSecs()
 
+mode=0
+
+look:point=Null
+
+Local held:letter ,heldbag:postbag, offx# , offy#
+
 While Not (AppTerminate() Or KeyHit(KEY_ESCAPE))
 	
 	mx=MouseX()
 	my=MouseY()
-
-	close:point=net.pick(mx,my,30)
-	
-	
-	net.draw
-	
-	'Rem
-	If close
-		p:point=point(net.first())
-		SetColor 255,0,0
-		For p2:point=EachIn p.route(close)
-			DrawLine p.x,p.y,p2.x,p2.y
-			p=p2
-		Next
-		SetColor 255,255,255
-		DrawText close.streetname + ", " + close.townname , close.x , close.y
-	endif
-	'EndRem
 	
 	oldms=ms
 	ms=MilliSecs()
+	delta#=(ms-oldms)/1000.0
+	
+	net.update delta
+
+	Select mode
+	Case 0	'nothing
+		If MouseHit(1)
+			look=net.pick(mx,my,30)
+			If look 
+				mode=1
+				letters=look.mailbox
+			EndIf
+		EndIf
+	Case 1	'look at place's letters
+		letters=look.mailbox
+		
+	
+		If MouseDown(1)
+			If Not held
+				held = letter.pick(mx , my)
+				If held
+					offx = held.x - mx
+					offy = held.y - my
+					letters.remove held
+					letters.addfirst held
+				EndIf
+			EndIf
+			If held
+				held.x = mx + offx
+				held.y = my + offy
+			EndIf
+		Else
+			If held
+				held.drop
+				held=Null
+			EndIf
+		EndIf
+		
+		If MouseDown(2)
+			If Not heldbag
+				l:letter = letter.pick(mx , my)
+				If l
+					heldbag=l.bag
+					offx = mx
+					offy = my
+				EndIf
+			EndIf
+			If heldbag
+				For l:letter = EachIn heldbag
+					l.x:+ mx - offx
+					l.y:+ my - offy
+				Next
+				offx = mx
+				offy = my
+			EndIf
+		Else
+			If heldbag
+				For l:letter = EachIn heldbag.copy()
+					l.drop
+				Next
+				heldbag=Null
+			EndIf
+		EndIf
+
+
+		
+		If KeyHit(KEY_SPACE)
+			mode=0
+		EndIf
+	End Select
+	
+	net.draw
+
+	Select mode
+	Case 0	
+		close:point=net.pick(mx,my,30)
+		If close
+			p:point=point(net.first())
+			SetColor 255,0,0
+			For p2:point=EachIn p.route(close)
+				DrawLine p.x,p.y,p2.x,p2.y
+				p=p2
+			Next
+			SetColor 255,255,255
+			label close.streetname + ", " + close.townname , close.x , close.y
+		EndIf
+	Case 1
+		SetAlpha .7
+		For l:letter = EachIn letters.reversed()
+			l.draw
+		Next
+		SetAlpha 1
+		
+		SetColor 255,255,255
+		DrawText postbags.count(),0,0
+
+	End Select
+		
+	tlabel.arrange
+	
 	SetColor 255,255,255
-	fps#=1000.0/(ms-oldms)
+	fps#=1/delta
 	DrawText Int(fps),0,0
+	DrawText mode,0,15
 
 	Flip
 	Cls
