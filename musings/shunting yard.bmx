@@ -48,8 +48,9 @@ Type shuntingyard
 	End Method
 	
 	Method nexttoken()
+		in=Trim(in)
 		Select Chr(in[0])
-		Case "0","1","2","3","4","5","6","7","8","9","0"
+		Case "0","1","2","3","4","5","6","7","8","9"
 			n=0
 			While n<Len(in) And in[n]>47 And in[n]<58
 				n:+1

@@ -62,3 +62,22 @@ Type bezierenumerator
 		Return point
 	End Method
 End Type
+
+'usage
+b:bezier = bezier.create( 0,0, 100,100, 200,200, 300,0 )
+
+'you can use EachIn to get all the points along the curve
+Local point#[2]
+
+For point=EachIn b
+	DrawRect point[0],point[1],1,1
+Next
+
+'or you can do it directly
+Local x#,y#
+Local t#=0
+
+For t=0 to 1 step 0.01
+	b.pos t,x,y
+	DrawRect x,y,1,1
+Next

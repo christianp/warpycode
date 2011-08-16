@@ -23,14 +23,17 @@ http:/ / www.matthiasmueller.info / publications / posBasedDyn.pdf
 EndRem
 
 
-Global objects:tlist=New tlist
+Const numsteps=5
+
+
+Global objects:TList=New TList
 Type obj
-	Field vertices:tlist
-	Field constraints:tlist
+	Field vertices:TList
+	Field constraints:TList
 	
 	Method New()
-		vertices = New tlist
-		constraints = New tlist
+		vertices = New TList
+		constraints = New TList
 		objects.addlast Self
 	End Method
 	
@@ -57,17 +60,17 @@ Type obj
 			v.p = v.x.add(v.v.scale(tstep) ) 
 			DrawRect v.p.x , v.p.y , 1 , 1
 			v2:vector = v.v.scale(tstep)
-			v.newp=vector.create(0,0)
+			v.newp=vector.Create(0,0)
 		Next
-		collconstraints:tlist=New tlist
+		collconstraints:TList=New TList
 		For v:vertex = EachIn vertices
 			If v.p.y >= 700
 				'Print "collision!"
 				diff:vector = v.p.subtract(v.x)
 				If diff.y<>0
 					qx# = v.p.x+diff.x * (700 - v.x.y) / diff.y
-					q:vector = vector.create(qx , 700)
-					cc:CollisionConstraint = collisionconstraint.create(v , q , vector.create(0 , - 1) , .9 ) 
+					q:vector = vector.Create(qx , 700)
+					cc:CollisionConstraint = collisionconstraint.Create(v , q , vector.Create(0 , - 1) , .9 ) 
 					'diff = v.p.subtract(q)
 					'cc.oldv=diff
 					collconstraints.addlast(cc)
@@ -75,10 +78,10 @@ Type obj
 			EndIf
 		Next
 
-		For i = 1 To 5
+		For i = 1 To numsteps
 			For v:vertex = EachIn vertices
 				v.p=v.p.add(v.newp)
-				v.newp = vector.create(0 , 0)
+				v.newp = vector.Create(0 , 0)
 			Next
 			For c:constraint = EachIn constraints
 				c.project()
@@ -128,7 +131,7 @@ Type vector
 		length = - 1
 	End Method
 	
-	Function create:vector(x# , y#, z# = 0)
+	Function Create:vector(x# , y#, z# = 0)
 		l:vector = New vector
 		l.x = x
 		l.y = y
@@ -138,11 +141,11 @@ Type vector
 	End Function
 	
 	Method add:vector(l:vector)
-		Return vector.create(x + l.x , y + l.y , z + l.z)
+		Return vector.Create(x + l.x , y + l.y , z + l.z)
 	End Method
 	
 	Method subtract:vector(l:vector)
-		Return vector.create(x - l.x , y - l.y , z - l.z)
+		Return vector.Create(x - l.x , y - l.y , z - l.z)
 	End Method
 	
 	Method modulus#()
@@ -157,20 +160,20 @@ Type vector
 	End Method
 	
 	Method crossproduct:vector(l:vector)
-		Return vector.create(y * l.z - z * l.y , z * l.x - x * l.z , x * l.y - y * l.x)
+		Return vector.Create(y * l.z - z * l.y , z * l.x - x * l.z , x * l.y - y * l.x)
 	End Method
 	
 	Method normal:vector()
 		modulus()
-		Return vector.create(x / length , y / length , z / length)
+		Return vector.Create(x / length , y / length , z / length)
 	End Method
 	
 	Method scale:vector(lambda#)
-		Return vector.create(x * lambda , y * lambda , z * lambda)
+		Return vector.Create(x * lambda , y * lambda , z * lambda)
 	End Method
 	
 	Method perpendicular:vector()
-		Return vector.create( - y , x)
+		Return vector.Create( - y , x)
 	End Method
 End Type
 
@@ -180,10 +183,10 @@ Type vertex
 	Field f:vector
 	Field newp:vector
 	
-	Function create:vertex(x# , y# , m#)
+	Function Create:vertex(x# , y# , m#)
 		v:vertex = New vertex
-		v.x = vector.create(x , y)
-		v.v = vector.create(0 , 0)
+		v.x = vector.Create(x , y)
+		v.v = vector.Create(0 , 0)
 		v.m=m
 		If v.m <> 0
 			v.w = 1 / v.m
@@ -191,16 +194,16 @@ Type vertex
 			Print  "tried to make vertex with zero mass??"
 			Return Null
 		EndIf
-		v.f=vector.create(0,0)
+		v.f=vector.Create(0,0)
 		
 		Return v
 	End Function
 	
 	Method externalforces(tstep#)
-		f = f.add(vector.create(0 , m*1.5) )
+		f = f.add(vector.Create(0 , m*1.5) )
 		f = f.scale(tstep * w)
 		v = v.add(f) 
-		f=vector.create(0,0)
+		f=vector.Create(0,0)
 		Return
 	End Method
 	
@@ -216,6 +219,11 @@ Type constraint
 	
 	Method New()
 		equality = 1
+		k=1
+	End Method
+	
+	Method setstiffness(tk#)
+		k#=1-(1-tk)^(1.0/numsteps)
 	End Method
 	
 	Method project()
@@ -230,18 +238,19 @@ End Type
 Type DistanceConstraint Extends constraint
 	Field v1:vertex , v2:vertex , d#
 	
-	Function create:DistanceConstraint(v1:vertex , v2:vertex , d#)
+	Function Create:DistanceConstraint(v1:vertex , v2:vertex , d#, k#=1)
 		dc:distanceconstraint = New distanceconstraint
 		dc.v1 = v1
 		dc.v2 = v2
 		dc.d = d
+		dc.setstiffness(k)
 		Return dc
 	End Function
 	
 	Method project()
 		diff:vector = v1.p.subtract(v2.p)
-		dp1:vector = diff.scale( - v1.w * (diff.modulus() - d) / ( (v1.w + v2.w) * diff.modulus() ) )
-		dp2:vector = diff.scale( v2.w * (diff.modulus() - d) / ( (v1.w + v2.w) * diff.modulus() ) )
+		dp1:vector = diff.scale( - v1.w * (diff.modulus() - d) / ( (v1.w + v2.w) * diff.modulus() ) * k )
+		dp2:vector = diff.scale( v2.w * (diff.modulus() - d) / ( (v1.w + v2.w) * diff.modulus() ) * k )
 		DrawText dp1.x,0,0
 		
 		v1.newp=v1.newp.add(dp1)
@@ -258,13 +267,14 @@ Type CollisionConstraint Extends constraint
 	Field oldv:vector
 	Field cor#
 	
-	Function create:CollisionConstraint(v:vertex , q:vector , n:vector,cor#=1)
+	Function Create:CollisionConstraint(v:vertex , q:vector , n:vector,cor#=1,k#=1)
 		cc:CollisionConstraint = New CollisionConstraint
 		cc.v = v
 		cc.q = q
 		cc.n = n
 		cc.cor=cor
 		cc.oldv=v.p.subtract(v.x)
+		cc.setstiffness(k)
 		'v.w=0
 		Return cc
 	End Function
@@ -273,7 +283,7 @@ Type CollisionConstraint Extends constraint
 		diff:vector = v.p.subtract(q)
 		scale# = diff.dotproduct(n)
 		If scale>=0 Return
-		dp:vector = n.scale( -scale )
+		dp:vector = n.scale( -scale * k )
 		'Print v.p.y
 		'Print String(dp.x) + "," + String(dp.y)
 		'Print v.x.y
@@ -289,33 +299,33 @@ SetBlend ALPHABLEND
 
 o:obj = New obj
 
-vert1:vertex = vertex.create(0 , 300 , 1)
+vert1:vertex = vertex.Create(0 , 300 , 1)
 vert1.w=0
 o.vertices.addlast vert1
 overt:vertex=vert1
 For i = 1 To 8
-	vert:vertex = vertex.create(i * 100 , 300 , 1)
+	vert:vertex = vertex.Create(i * 100 , 300 , 1)
 	o.vertices.addlast vert
-	o.constraints.addlast distanceconstraint.create(overt , vert , 100)
+	o.constraints.addlast distanceconstraint.Create(overt , vert , 100)
 	overt = vert
 Next
 
-vert:vertex = vertex.create(200 , 100 , 1)
+vert:vertex = vertex.Create(200 , 100 , 1)
 vert.w=0
 o.vertices.addlast vert
-o.constraints.addlast distanceconstraint.create(vert , overt , 100)
+o.constraints.addlast distanceconstraint.Create(vert , overt , 100)
 
 o = New obj
-vertjim:vertex = vertex.create(520 , 360 , 1) 
-vertjim.v=vector.create(5,0)
+vertjim:vertex = vertex.Create(520 , 360 , 1) 
+vertjim.v=vector.Create(5,0)
 o.vertices.addlast(vertjim)
-vertjim2:vertex = vertex.create(570 , 360 , 1)
-vertjim3:vertex = vertex.create(545, 360-Sqr(1875) , 1)
+vertjim2:vertex = vertex.Create(570 , 360 , 1)
+vertjim3:vertex = vertex.Create(545, 360-Sqr(1875) , 1)
 o.vertices.addlast vertjim2
 o.vertices.addlast vertjim3
-o.constraints.addlast distanceconstraint.create(vertjim , vertjim2 , 50)
-o.constraints.addlast distanceconstraint.create(vertjim , vertjim3 , 50)
-o.constraints.addlast distanceconstraint.create(vertjim3 , vertjim2 , 50)
+o.constraints.addlast distanceconstraint.Create(vertjim , vertjim2 , 50,.3)
+o.constraints.addlast distanceconstraint.Create(vertjim , vertjim3 , 50,.3)
+o.constraints.addlast distanceconstraint.Create(vertjim3 , vertjim2 , 50,.3)
 
 
 finished = 0
@@ -331,7 +341,7 @@ While Not finished
 		finished = 1
 	EndIf
 	
-	vert.x = vector.create(MouseX() , MouseY() ) 
+	vert.x = vector.Create(MouseX() , MouseY() ) 
 	
 	For o:obj=EachIn objects
 		o.update(1)
